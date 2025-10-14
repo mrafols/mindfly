@@ -267,28 +267,17 @@ export async function searchRealFlights(
     return publicFlights;
   }
 
-  // 2. Intentar con ADS-B Exchange (datos en tiempo real)
+  // 2. Intentar con AeroDataBox (datos completos de aeropuertos y vuelos)
   try {
-    const { searchRouteFlightsADSB } = await import('./adsbexchange-api');
-    const { findAirport } = await import('./airports');
+    const { searchRouteFlightsAeroDataBox } = await import('./aerodatabox-api');
     
-    const originAirport = findAirport(originIATA);
-    const destAirport = findAirport(destinationIATA);
+    const aeroDataBoxFlights = await searchRouteFlightsAeroDataBox(originIATA, destinationIATA);
     
-    if (originAirport && destAirport) {
-      const adsbFlights = await searchRouteFlightsADSB(
-        originAirport.lat,
-        originAirport.lon,
-        destAirport.lat,
-        destAirport.lon
-      );
-      
-      if (adsbFlights.length > 0) {
-        return adsbFlights;
-      }
+    if (aeroDataBoxFlights.length > 0) {
+      return aeroDataBoxFlights;
     }
   } catch (error) {
-    console.error('Error con ADS-B Exchange:', error);
+    console.error('Error con AeroDataBox:', error);
   }
 
   // 3. Intentar con AviationStack si está configurado
