@@ -65,6 +65,22 @@
       "dimensions": "Dimensions",
       "turbulenceRating": "Turbulence handling"
     },
+    "charts": {
+      "title": "📊 Turbulence Throughout the Flight",
+      "xAxisLabel": "Flight progress (%)",
+      "yAxisLabel": "Probability (%)",
+      "probability": "Probability",
+      "severity": "Severity",
+      "smooth": "🟢 Smooth",
+      "moderate": "🟡 Moderate",
+      "turbulent": "🔴 Intense"
+    },
+    "progressBar": {
+      "title": "🛫 Turbulence Map Along the Route",
+      "origin": "Origin",
+      "destination": "Destination",
+      "cruising": "Cruising"
+    },
     "explanation": {
       "title": "What Does This All Mean?",
       "intro": "We understand that flying can cause anxiety. Let us explain your flight conditions:",

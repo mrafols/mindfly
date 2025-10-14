@@ -5,6 +5,8 @@ import { Flight, FlightForecast, getFlightForecast } from '@/lib/flights';
 import FlightCard from './FlightCard';
 import TurbulenceIndicator from './TurbulenceIndicator';
 import AircraftInfo from './AircraftInfo';
+import TurbulenceChart from './TurbulenceChart';
+import RouteProgressBar from './RouteProgressBar';
 
 interface FlightSelectorProps {
   flights: Flight[];
@@ -12,6 +14,8 @@ interface FlightSelectorProps {
   originLon: number;
   destLat: number;
   destLon: number;
+  originCity: string;
+  destCity: string;
   labels: {
     title: string;
     noFlights: string;
@@ -38,6 +42,22 @@ interface FlightSelectorProps {
       dimensions: string;
       turbulenceRating: string;
     };
+    chartLabels: {
+      title: string;
+      xAxisLabel: string;
+      yAxisLabel: string;
+      probability: string;
+      severity: string;
+      smooth: string;
+      moderate: string;
+      turbulent: string;
+    };
+    progressBarLabels: {
+      title: string;
+      origin: string;
+      destination: string;
+      cruising: string;
+    };
   };
 }
 
@@ -47,6 +67,8 @@ export default function FlightSelector({
   originLon,
   destLat,
   destLon,
+  originCity,
+  destCity,
   labels
 }: FlightSelectorProps) {
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
@@ -109,6 +131,25 @@ export default function FlightSelector({
             aircraftCode={forecast.flight.aircraft}
             labels={labels.aircraftLabels}
           />
+
+          {/* Barra de progreso visual de la ruta */}
+          {forecast.turbulencePoints && forecast.turbulencePoints.length > 0 && (
+            <RouteProgressBar
+              turbulenceData={forecast.turbulencePoints}
+              originCity={originCity}
+              destCity={destCity}
+              labels={labels.progressBarLabels}
+            />
+          )}
+
+          {/* Gráficos de turbulencia */}
+          {forecast.turbulencePoints && forecast.turbulencePoints.length > 0 && (
+            <TurbulenceChart
+              turbulenceData={forecast.turbulencePoints}
+              flightDuration={`${Math.floor((new Date(forecast.flight.arrivalTime).getTime() - new Date(forecast.flight.departureTime).getTime()) / (1000 * 60 * 60))}h ${Math.floor(((new Date(forecast.flight.arrivalTime).getTime() - new Date(forecast.flight.departureTime).getTime()) % (1000 * 60 * 60)) / (1000 * 60))}m`}
+              labels={labels.chartLabels}
+            />
+          )}
 
           {/* Indicador de turbulencia */}
           <TurbulenceIndicator

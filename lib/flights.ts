@@ -30,6 +30,7 @@ export interface FlightForecast {
   turbulence: TurbulenceData;
   weatherAlerts: string[];
   recommendation: string;
+  turbulencePoints?: import('./noaa-weather').TurbulenceForecastPoint[]; // Datos detallados para gráficos
 }
 
 // Función para buscar vuelos entre dos aeropuertos
@@ -38,13 +39,20 @@ export async function searchFlights(
   destinationIATA: string
 ): Promise<Flight[]> {
   try {
-    // Usaremos AviationStack API (tiene plan gratuito)
-    // Por ahora simularemos datos realistas
-    const flights = generateMockFlights(originIATA, destinationIATA);
-    return flights;
+    // Usar la nueva API de vuelos reales
+    const { searchRealFlights } = await import('./flight-apis');
+    const flights = await searchRealFlights(originIATA, destinationIATA);
+    
+    if (flights.length > 0) {
+      return flights;
+    }
+    
+    // Fallback solo si no hay datos reales
+    console.warn('No se encontraron vuelos reales, usando fallback');
+    return [];
   } catch (error) {
     console.error('Error buscando vuelos:', error);
-    return generateMockFlights(originIATA, destinationIATA);
+    return [];
   }
 }
 
@@ -186,47 +194,9 @@ function analyzeTurbulence(weatherData: (WeatherApiResponse | null)[]): Turbulen
   };
 }
 
-// Generar vuelos simulados (hasta que integremos API real)
-function generateMockFlights(_origin: string, _destination: string): Flight[] {
-  const now = new Date();
-  const flights: Flight[] = [];
-  
-  // Aerolíneas comunes en España
-  const airlines = [
-    { code: 'IB', name: 'Iberia' },
-    { code: 'VY', name: 'Vueling' },
-    { code: 'UX', name: 'Air Europa' },
-    { code: 'FR', name: 'Ryanair' }
-  ];
-  
-  // Generar 3-5 vuelos del día
-  const numFlights = Math.floor(Math.random() * 3) + 3;
-  
-  for (let i = 0; i < numFlights; i++) {
-    const airline = airlines[Math.floor(Math.random() * airlines.length)];
-    const departureHour = 6 + (i * 3) + Math.floor(Math.random() * 2);
-    const flightDuration = 1.5 + Math.random() * 2; // 1.5-3.5 horas
-    
-    const departure = new Date(now);
-    departure.setHours(departureHour, Math.floor(Math.random() * 60), 0);
-    
-    const arrival = new Date(departure);
-    arrival.setHours(arrival.getHours() + Math.floor(flightDuration));
-    arrival.setMinutes(arrival.getMinutes() + Math.floor((flightDuration % 1) * 60));
-    
-    flights.push({
-      flightNumber: `${airline.code}${1000 + Math.floor(Math.random() * 9000)}`,
-      airline: airline.name,
-      departureTime: departure.toISOString(),
-      arrivalTime: arrival.toISOString(),
-      aircraft: ['A320', 'A321', 'B737', 'B738'][Math.floor(Math.random() * 4)],
-      status: departure < now ? 'active' : 'scheduled'
-    });
-  }
-  
-  return flights.sort((a, b) => 
-    new Date(a.departureTime).getTime() - new Date(b.departureTime).getTime()
-  );
+// Esta función ya no se usa, mantenida solo por compatibilidad
+function _generateMockFlights(_origin: string, _destination: string): Flight[] {
+  return [];
 }
 
 // Función principal para obtener forecast completo de un vuelo
@@ -275,11 +245,22 @@ export async function getFlightForecast(
     weatherAlerts.push('Condiciones de viento intensas en ruta');
   }
   
+  // Obtener datos detallados de turbulencia para gráficos
+  let turbulencePoints;
+  try {
+    const { getNOAATurbulenceData } = await import('./noaa-weather');
+    const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon, 15);
+    turbulencePoints = await getNOAATurbulenceData(waypoints, 350);
+  } catch (error) {
+    console.error('Error obteniendo datos detallados:', error);
+  }
+
   return {
     flight,
     turbulence,
     weatherAlerts,
-    recommendation
+    recommendation,
+    turbulencePoints
   };
 }
 

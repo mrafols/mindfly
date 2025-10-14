@@ -65,6 +65,22 @@
       "dimensions": "Dimensiones",
       "turbulenceRating": "Manejo de turbulencias"
     },
+    "charts": {
+      "title": "📊 Turbulencias a lo Largo del Vuelo",
+      "xAxisLabel": "Progreso del vuelo (%)",
+      "yAxisLabel": "Probabilidad (%)",
+      "probability": "Probabilidad",
+      "severity": "Severidad",
+      "smooth": "🟢 Suave",
+      "moderate": "🟡 Moderada",
+      "turbulent": "🔴 Intensa"
+    },
+    "progressBar": {
+      "title": "🛫 Mapa de Turbulencias en la Ruta",
+      "origin": "Origen",
+      "destination": "Destino",
+      "cruising": "En crucero"
+    },
     "explanation": {
       "title": "¿Qué Significa Todo Esto?",
       "intro": "Entendemos que volar puede generar ansiedad. Déjanos explicarte las condiciones de tu vuelo:",

@@ -103,6 +103,8 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
             originLon={originAirport.lon}
             destLat={destAirport.lat}
             destLon={destAirport.lon}
+            originCity={originAirport.city}
+            destCity={destAirport.city}
             labels={{
               title: t('flights.title'),
               noFlights: t('flights.noFlights'),
@@ -128,6 +130,22 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
                 cruiseSpeed: t('aircraft.cruiseSpeed'),
                 dimensions: t('aircraft.dimensions'),
                 turbulenceRating: t('aircraft.turbulenceRating'),
+              },
+              chartLabels: {
+                title: t('charts.title'),
+                xAxisLabel: t('charts.xAxisLabel'),
+                yAxisLabel: t('charts.yAxisLabel'),
+                probability: t('charts.probability'),
+                severity: t('charts.severity'),
+                smooth: t('charts.smooth'),
+                moderate: t('charts.moderate'),
+                turbulent: t('charts.turbulent'),
+              },
+              progressBarLabels: {
+                title: t('progressBar.title'),
+                origin: t('progressBar.origin'),
+                destination: t('progressBar.destination'),
+                cruising: t('progressBar.cruising'),
               },
             }}
           />
