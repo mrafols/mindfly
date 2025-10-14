@@ -34,14 +34,16 @@ export default async function LocaleLayout({
         <meta name="keywords" content="vuelo, meteorología, clima, aviación, miedo a volar, ansiedad, aeropuertos, pronóstico" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>" />
       </head>
-      <body className="min-h-screen bg-white">
+      <body className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
         <NextIntlClientProvider messages={messages}>
-          <nav className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+          <nav className="bg-white/70 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">✈️</span>
-                  <h1 className="text-xl font-semibold text-gray-900">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
+                    <span className="text-xl">✈️</span>
+                  </div>
+                  <h1 className="text-xl font-bold text-gradient">
                     MindFly
                   </h1>
                 </div>
@@ -50,10 +52,10 @@ export default async function LocaleLayout({
             </div>
           </nav>
           <main>{children}</main>
-          <footer className="mt-auto border-t border-gray-100 py-8 bg-gray-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
-              <p className="text-sm">© 2025 MindFly</p>
-              <p className="text-xs mt-1 text-gray-500">Datos meteorológicos: Open-Meteo</p>
+          <footer className="mt-20 bg-gradient-to-br from-slate-900 to-blue-900 text-white py-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+              <p className="text-sm opacity-90">© 2025 MindFly - Vuela con confianza</p>
+              <p className="text-xs mt-2 opacity-60">Datos meteorológicos: Open-Meteo</p>
             </div>
           </footer>
         </NextIntlClientProvider>

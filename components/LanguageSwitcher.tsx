@@ -14,23 +14,23 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 bg-white/50 backdrop-blur-sm rounded-xl p-1">
       <button
         onClick={() => switchLanguage('es')}
-        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+        className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
           locale === 'es'
-            ? 'bg-gray-900 text-white'
-            : 'text-gray-600 hover:bg-gray-100'
+            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+            : 'text-slate-600 hover:bg-white/80'
         }`}
       >
         ES
       </button>
       <button
         onClick={() => switchLanguage('en')}
-        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
+        className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
           locale === 'en'
-            ? 'bg-gray-900 text-white'
-            : 'text-gray-600 hover:bg-gray-100'
+            ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+            : 'text-slate-600 hover:bg-white/80'
         }`}
       >
         EN
