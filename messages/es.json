@@ -56,6 +56,15 @@
       "probability": "Probabilidad",
       "altitude": "Altitud de crucero"
     },
+    "aircraft": {
+      "title": "Información de la Aeronave",
+      "manufacturer": "Fabricante",
+      "category": "Categoría",
+      "cruiseAltitude": "Altitud de crucero",
+      "cruiseSpeed": "Velocidad de crucero",
+      "dimensions": "Dimensiones",
+      "turbulenceRating": "Manejo de turbulencias"
+    },
     "explanation": {
       "title": "¿Qué Significa Todo Esto?",
       "intro": "Entendemos que volar puede generar ansiedad. Déjanos explicarte las condiciones de tu vuelo:",

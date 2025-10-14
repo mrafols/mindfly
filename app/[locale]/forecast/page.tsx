@@ -120,6 +120,15 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
                 probability: t('turbulence.probability'),
                 altitude: t('turbulence.altitude'),
               },
+              aircraftLabels: {
+                title: t('aircraft.title'),
+                manufacturer: t('aircraft.manufacturer'),
+                category: t('aircraft.category'),
+                cruiseAltitude: t('aircraft.cruiseAltitude'),
+                cruiseSpeed: t('aircraft.cruiseSpeed'),
+                dimensions: t('aircraft.dimensions'),
+                turbulenceRating: t('aircraft.turbulenceRating'),
+              },
             }}
           />
         </div>

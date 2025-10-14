@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Flight, FlightForecast, getFlightForecast } from '@/lib/flights';
 import FlightCard from './FlightCard';
 import TurbulenceIndicator from './TurbulenceIndicator';
+import AircraftInfo from './AircraftInfo';
 
 interface FlightSelectorProps {
   flights: Flight[];
@@ -27,6 +28,15 @@ interface FlightSelectorProps {
       severity: string;
       probability: string;
       altitude: string;
+    };
+    aircraftLabels: {
+      title: string;
+      manufacturer: string;
+      category: string;
+      cruiseAltitude: string;
+      cruiseSpeed: string;
+      dimensions: string;
+      turbulenceRating: string;
     };
   };
 }
@@ -94,6 +104,12 @@ export default function FlightSelector({
 
       {forecast && !loading && (
         <div className="space-y-6 animate-fadeInUp">
+          {/* Información de la aeronave */}
+          <AircraftInfo
+            aircraftCode={forecast.flight.aircraft}
+            labels={labels.aircraftLabels}
+          />
+
           {/* Indicador de turbulencia */}
           <TurbulenceIndicator
             turbulence={forecast.turbulence}

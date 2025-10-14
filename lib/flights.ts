@@ -57,24 +57,30 @@ export async function getTurbulenceForecast(
   destLon: number
 ): Promise<TurbulenceData> {
   try {
-    // Calcular puntos en la ruta del vuelo
-    const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon);
+    // Importar dinámicamente el módulo de NOAA
+    const { getNOAATurbulenceData, analyzeTurbulenceRoute } = await import('./noaa-weather');
     
-    // Obtener datos meteorológicos en altitud de crucero
-    const weatherData = await getUpperAirWeather(waypoints);
+    // Calcular puntos en la ruta del vuelo (más puntos para mejor precisión)
+    const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon, 15);
     
-    // Calcular probabilidad de turbulencia
-    const turbulence = analyzeTurbulence(weatherData);
+    // Obtener datos de turbulencia de NOAA/Open-Meteo
+    const turbulencePoints = await getNOAATurbulenceData(waypoints, 350);
     
-    return turbulence;
+    // Analizar la ruta completa
+    const routeAnalysis = analyzeTurbulenceRoute(turbulencePoints);
+    
+    return {
+      severity: routeAnalysis.maxSeverity,
+      altitude: 35000,
+      probability: routeAnalysis.avgProbability,
+      description: routeAnalysis.recommendation
+    };
   } catch (error) {
     console.error('Error obteniendo pronóstico de turbulencia:', error);
-    return {
-      severity: 'light',
-      altitude: 35000,
-      probability: 20,
-      description: 'Condiciones normales de vuelo'
-    };
+    // Fallback al método anterior si falla
+    const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon);
+    const weatherData = await getUpperAirWeather(waypoints);
+    return analyzeTurbulence(weatherData);
   }
 }
 
@@ -231,13 +237,29 @@ export async function getFlightForecast(
   destLat: number,
   destLon: number
 ): Promise<FlightForecast> {
-  const turbulence = await getTurbulenceForecast(
+  // Obtener pronóstico base de turbulencia
+  const baseTurbulence = await getTurbulenceForecast(
     flight,
     originLat,
     originLon,
     destLat,
     destLon
   );
+  
+  // Ajustar según tipo de aeronave (datos de SKYbrary)
+  const { adjustTurbulenceByAircraft } = await import('./aircraft-data');
+  const adjusted = adjustTurbulenceByAircraft(
+    baseTurbulence.severity,
+    baseTurbulence.probability,
+    flight.aircraft
+  );
+  
+  const turbulence: TurbulenceData = {
+    severity: adjusted.adjustedSeverity,
+    altitude: baseTurbulence.altitude,
+    probability: adjusted.adjustedProbability,
+    description: `${baseTurbulence.description}\n\n${adjusted.explanation}`
+  };
   
   const weatherAlerts: string[] = [];
   let recommendation = '';

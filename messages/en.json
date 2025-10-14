@@ -56,6 +56,15 @@
       "probability": "Probability",
       "altitude": "Cruise altitude"
     },
+    "aircraft": {
+      "title": "Aircraft Information",
+      "manufacturer": "Manufacturer",
+      "category": "Category",
+      "cruiseAltitude": "Cruise altitude",
+      "cruiseSpeed": "Cruise speed",
+      "dimensions": "Dimensions",
+      "turbulenceRating": "Turbulence handling"
+    },
     "explanation": {
       "title": "What Does This All Mean?",
       "intro": "We understand that flying can cause anxiety. Let us explain your flight conditions:",
