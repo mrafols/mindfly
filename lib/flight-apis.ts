@@ -189,7 +189,6 @@ function getCommonRoutes(origin: string, destination: string): Flight[] {
       { airline: 'Air Europa', flightNumber: 'UX1031', aircraft: 'B738', departureHour: 12, departureMinute: 15, durationHours: 1, durationMinutes: 30, frequency: 'daily' },
       { airline: 'Vueling', flightNumber: 'VY1009', aircraft: 'A320', departureHour: 14, departureMinute: 45, durationHours: 1, durationMinutes: 25, frequency: 'daily' },
       { airline: 'Iberia', flightNumber: 'IB1041', aircraft: 'A320', departureHour: 17, departureMinute: 0, durationHours: 1, durationMinutes: 25, frequency: 'daily' },
-      { airline: 'Ryanair', flightNumber: 'FR2541', aircraft: 'B738', departureHour: 19, departureMinute: 30, durationHours: 1, durationMinutes: 30, frequency: 'daily' },
     ],
     'MAD-BCN': [
       { airline: 'Iberia', flightNumber: 'IB1014', aircraft: 'A320', departureHour: 9, departureMinute: 0, durationHours: 1, durationMinutes: 25, frequency: 'daily' },
@@ -215,6 +214,34 @@ function getCommonRoutes(origin: string, destination: string): Flight[] {
       { airline: 'Vueling', flightNumber: 'VY8001', aircraft: 'A320', departureHour: 10, departureMinute: 30, durationHours: 1, durationMinutes: 55, frequency: 'daily' },
       { airline: 'Air France', flightNumber: 'AF1648', aircraft: 'A321', departureHour: 14, departureMinute: 0, durationHours: 1, durationMinutes: 50, frequency: 'daily' },
       { airline: 'Vueling', flightNumber: 'VY8011', aircraft: 'A320', departureHour: 17, departureMinute: 15, durationHours: 1, durationMinutes: 55, frequency: 'daily' },
+    ],
+    // Ryanair - Rutas verificadas
+    'AGP-FMM': [
+      { airline: 'Ryanair', flightNumber: 'FR2541', aircraft: 'B738', departureHour: 6, departureMinute: 30, durationHours: 2, durationMinutes: 45, frequency: 'daily' },
+    ],
+    'FMM-AGP': [
+      { airline: 'Ryanair', flightNumber: 'FR2542', aircraft: 'B738', departureHour: 10, departureMinute: 0, durationHours: 2, durationMinutes: 45, frequency: 'daily' },
+    ],
+    // Más rutas Ryanair verificadas
+    'AGP-STN': [
+      { airline: 'Ryanair', flightNumber: 'FR312', aircraft: 'B738', departureHour: 7, departureMinute: 15, durationHours: 3, durationMinutes: 0, frequency: 'daily' },
+    ],
+    'BCN-STN': [
+      { airline: 'Ryanair', flightNumber: 'FR208', aircraft: 'B738', departureHour: 8, departureMinute: 0, durationHours: 2, durationMinutes: 30, frequency: 'daily' },
+    ],
+    'MAD-DUB': [
+      { airline: 'Ryanair', flightNumber: 'FR7054', aircraft: 'B738', departureHour: 9, departureMinute: 30, durationHours: 2, durationMinutes: 40, frequency: 'daily' },
+      { airline: 'Aer Lingus', flightNumber: 'EI605', aircraft: 'A320', departureHour: 11, departureMinute: 0, durationHours: 2, durationMinutes: 35, frequency: 'daily' },
+    ],
+    'BCN-DUB': [
+      { airline: 'Ryanair', flightNumber: 'FR6326', aircraft: 'B738', departureHour: 10, departureMinute: 15, durationHours: 2, durationMinutes: 50, frequency: 'daily' },
+      { airline: 'Aer Lingus', flightNumber: 'EI565', aircraft: 'A320', departureHour: 13, departureMinute: 30, durationHours: 2, durationMinutes: 45, frequency: 'daily' },
+    ],
+    'PMI-MAH': [
+      { airline: 'Air Europa', flightNumber: 'UX6004', aircraft: 'ATR72', departureHour: 8, departureMinute: 0, durationHours: 0, durationMinutes: 35, frequency: 'daily' },
+    ],
+    'MAH-BCN': [
+      { airline: 'Vueling', flightNumber: 'VY3951', aircraft: 'A320', departureHour: 9, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
     ],
   };
 
