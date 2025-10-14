@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Leaflet overrides */
+.leaflet-container {
+  z-index: 0;
+}
+
+.airport-icon {
+  background: none !important;
+  border: none !important;
+  font-size: 24px;
+}
+

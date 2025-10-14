@@ -1,0 +1,74 @@
+{
+  "home": {
+    "title": "MindFly - Fly with Peace of Mind",
+    "subtitle": "Know your flight's weather conditions and fly with confidence",
+    "searchTitle": "Search Your Flight Route",
+    "origin": "Origin Airport",
+    "originPlaceholder": "E.g: Barcelona (BCN)",
+    "destination": "Destination Airport",
+    "destinationPlaceholder": "E.g: Madrid (MAD)",
+    "searchButton": "Search Forecast",
+    "loading": "Loading weather data...",
+    "features": {
+      "title": "Why MindFly?",
+      "realtime": {
+        "title": "Real-Time Data",
+        "description": "Updated weather information for your flight route"
+      },
+      "detailed": {
+        "title": "Detailed Explanations",
+        "description": "We understand that flying can be nerve-wracking. We explain everything clearly and reassuringly"
+      },
+      "visual": {
+        "title": "Visual Maps",
+        "description": "Visualize your route with interactive maps and weather conditions"
+      }
+    }
+  },
+  "forecast": {
+    "title": "Your Flight Forecast",
+    "route": "Route: {origin} → {destination}",
+    "distance": "Approximate distance: {distance} km",
+    "flightTime": "Estimated flight time: {time}",
+    "weatherConditions": "Weather Conditions",
+    "originWeather": "Origin Weather",
+    "destinationWeather": "Destination Weather",
+    "routeWeather": "Route Weather",
+    "temperature": "Temperature",
+    "humidity": "Humidity",
+    "windSpeed": "Wind Speed",
+    "conditions": "Conditions",
+    "pressure": "Pressure",
+    "visibility": "Visibility",
+    "explanation": {
+      "title": "What Does This All Mean?",
+      "intro": "We understand that flying can cause anxiety. Let us explain your flight conditions:",
+      "goodConditions": "Good news! Weather conditions are excellent for flying. Pilots are highly trained and aircraft are designed for these conditions.",
+      "normalConditions": "Conditions are normal and safe for flying. Modern aircraft are equipped with advanced technology to handle these situations.",
+      "turbulence": {
+        "title": "About Turbulence",
+        "light": "There may be light turbulence, which is completely normal and safe. It's like driving on a road with some bumps - annoying but not dangerous.",
+        "moderate": "There may be moderate turbulence on the route. While it may be uncomfortable, aircraft are designed to withstand much stronger turbulence. Pilots are prepared and will adjust the route if necessary.",
+        "info": "Turbulence is caused by air currents and is completely normal. Aircraft are very solid structures designed to withstand it without problems."
+      },
+      "wind": {
+        "title": "About Wind",
+        "normal": "Winds are normal for operations. Pilots constantly adjust the trajectory and are experts at landing in windy conditions.",
+        "strong": "Although there are strong winds, airports have strict protocols and only operate if it's safe. Pilots are highly trained for these conditions."
+      },
+      "visibility": {
+        "title": "About Visibility",
+        "good": "Visibility is excellent, which facilitates flight operations.",
+        "reduced": "Although visibility may be reduced, aircraft use sophisticated instruments to navigate and land safely, even with zero visibility."
+      },
+      "safety": "Remember: Flying is one of the safest means of transportation. Aircraft are constantly inspected, pilots have thousands of hours of training, and there are multiple redundant safety systems."
+    },
+    "newSearch": "Search Another Route"
+  },
+  "errors": {
+    "fillFields": "Please fill in both fields",
+    "loadingError": "Error loading weather data. Please try again.",
+    "invalidAirport": "Could not find the airport. Please verify the names."
+  }
+}
+

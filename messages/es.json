@@ -1,0 +1,74 @@
+{
+  "home": {
+    "title": "MindFly - Vuela Tranquilo",
+    "subtitle": "Conoce las condiciones meteorológicas de tu vuelo y vuela con tranquilidad",
+    "searchTitle": "Busca tu Ruta de Vuelo",
+    "origin": "Aeropuerto de Origen",
+    "originPlaceholder": "Ej: Barcelona (BCN)",
+    "destination": "Aeropuerto de Destino",
+    "destinationPlaceholder": "Ej: Madrid (MAD)",
+    "searchButton": "Buscar Pronóstico",
+    "loading": "Cargando datos meteorológicos...",
+    "features": {
+      "title": "¿Por qué MindFly?",
+      "realtime": {
+        "title": "Datos en Tiempo Real",
+        "description": "Información meteorológica actualizada de tu ruta de vuelo"
+      },
+      "detailed": {
+        "title": "Explicaciones Detalladas",
+        "description": "Entendemos que volar puede dar nervios. Te explicamos todo de forma clara y tranquilizadora"
+      },
+      "visual": {
+        "title": "Mapas Visuales",
+        "description": "Visualiza tu ruta con mapas interactivos y condiciones climáticas"
+      }
+    }
+  },
+  "forecast": {
+    "title": "Pronóstico de tu Vuelo",
+    "route": "Ruta: {origin} → {destination}",
+    "distance": "Distancia aproximada: {distance} km",
+    "flightTime": "Tiempo de vuelo estimado: {time}",
+    "weatherConditions": "Condiciones Meteorológicas",
+    "originWeather": "Clima en Origen",
+    "destinationWeather": "Clima en Destino",
+    "routeWeather": "Clima en la Ruta",
+    "temperature": "Temperatura",
+    "humidity": "Humedad",
+    "windSpeed": "Velocidad del Viento",
+    "conditions": "Condiciones",
+    "pressure": "Presión",
+    "visibility": "Visibilidad",
+    "explanation": {
+      "title": "¿Qué Significa Todo Esto?",
+      "intro": "Entendemos que volar puede generar ansiedad. Déjanos explicarte las condiciones de tu vuelo:",
+      "goodConditions": "¡Buenas noticias! Las condiciones meteorológicas son excelentes para volar. Los pilotos están altamente entrenados y los aviones están diseñados para estas condiciones.",
+      "normalConditions": "Las condiciones son normales y seguras para el vuelo. Los aviones modernos están equipados con tecnología avanzada para manejar estas situaciones.",
+      "turbulence": {
+        "title": "Sobre las Turbulencias",
+        "light": "Puede haber turbulencias ligeras, que son completamente normales y seguras. Es como conducir por un camino con algunos baches - molesto pero no peligroso.",
+        "moderate": "Puede haber turbulencias moderadas en la ruta. Aunque puede ser incómodo, los aviones están diseñados para resistir turbulencias mucho más fuertes. Los pilotos están preparados y ajustarán la ruta si es necesario.",
+        "info": "Las turbulencias son causadas por corrientes de aire y son completamente normales. Los aviones son estructuras muy sólidas diseñadas para soportarlas sin problemas."
+      },
+      "wind": {
+        "title": "Sobre el Viento",
+        "normal": "Los vientos son normales para la operación. Los pilotos ajustan constantemente la trayectoria y son expertos en aterrizajes con viento.",
+        "strong": "Aunque hay vientos fuertes, los aeropuertos tienen protocolos estrictos y solo operan si es seguro. Los pilotos están altamente entrenados para estas condiciones."
+      },
+      "visibility": {
+        "title": "Sobre la Visibilidad",
+        "good": "La visibilidad es excelente, lo que facilita las operaciones de vuelo.",
+        "reduced": "Aunque la visibilidad puede estar reducida, los aviones utilizan instrumentos sofisticados para navegar y aterrizar de forma segura, incluso con visibilidad cero."
+      },
+      "safety": "Recuerda: Volar es uno de los medios de transporte más seguros. Los aviones se revisan constantemente, los pilotos tienen miles de horas de entrenamiento, y existen múltiples sistemas de seguridad redundantes."
+    },
+    "newSearch": "Buscar Otra Ruta"
+  },
+  "errors": {
+    "fillFields": "Por favor, completa ambos campos",
+    "loadingError": "Error al cargar los datos meteorológicos. Por favor, intenta de nuevo.",
+    "invalidAirport": "No se pudo encontrar el aeropuerto. Por favor, verifica los nombres."
+  }
+}
+
