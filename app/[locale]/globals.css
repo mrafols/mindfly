@@ -2,169 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom animations */
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes fly {
-  0% {
-    transform: translateX(-100px) translateY(0px);
+@keyframes fadeIn {
+  from {
     opacity: 0;
+    transform: translateY(20px);
   }
-  50% {
+  to {
     opacity: 1;
-  }
-  100% {
-    transform: translateX(100vw) translateY(-50px);
-    opacity: 0;
+    transform: translateY(0);
   }
 }
 
-@keyframes cloud-move {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100vw);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.float-animation {
-  animation: float 6s ease-in-out infinite;
-}
-
-.fly-animation {
-  animation: fly 20s linear infinite;
-}
-
-.cloud-animation {
-  animation: cloud-move 60s linear infinite;
-}
-
-.shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  background-size: 1000px 100%;
-  animation: shimmer 3s infinite;
-}
-
-/* Sky gradient background */
-.sky-gradient {
-  background: linear-gradient(
-    180deg,
-    #0f2027 0%,
-    #203a43 20%,
-    #2c5364 40%,
-    #4ca1af 60%,
-    #87ceeb 80%,
-    #b0e0e6 100%
-  );
-}
-
-.sunrise-gradient {
-  background: linear-gradient(
-    135deg,
-    #667eea 0%,
-    #764ba2 25%,
-    #f093fb 50%,
-    #f5576c 75%,
-    #feca57 100%
-  );
-}
-
-/* Glass morphism effect */
-.glass {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.glass-dark {
-  background: rgba(15, 32, 39, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Cloud shapes */
-.cloud {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 100px;
-  opacity: 0.6;
-}
-
-.cloud::before,
-.cloud::after {
-  content: '';
-  position: absolute;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 100px;
-}
-
-.cloud::before {
-  width: 50px;
-  height: 50px;
-  top: -25px;
-  left: 10px;
-}
-
-.cloud::after {
-  width: 60px;
-  height: 60px;
-  top: -30px;
-  right: 10px;
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out forwards;
 }
 
 /* Leaflet overrides */
 .leaflet-container {
   z-index: 0;
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
 }
 
 .airport-icon {
   background: none !important;
   border: none !important;
   font-size: 24px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.5);
-  border-radius: 5px;
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.8);
+  background: #94a3b8;
 }
 

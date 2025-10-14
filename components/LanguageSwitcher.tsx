@@ -14,28 +14,27 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-2">
       <button
         onClick={() => switchLanguage('es')}
-        className={`px-5 py-2 rounded-xl transition-all font-semibold text-lg ${
+        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
           locale === 'es'
-            ? 'bg-white text-blue-600 shadow-lg'
-            : 'glass text-white hover:bg-white/30'
+            ? 'bg-gray-900 text-white'
+            : 'text-gray-600 hover:bg-gray-100'
         }`}
       >
-        🇪🇸 ES
+        ES
       </button>
       <button
         onClick={() => switchLanguage('en')}
-        className={`px-5 py-2 rounded-xl transition-all font-semibold text-lg ${
+        className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${
           locale === 'en'
-            ? 'bg-white text-blue-600 shadow-lg'
-            : 'glass text-white hover:bg-white/30'
+            ? 'bg-gray-900 text-white'
+            : 'text-gray-600 hover:bg-gray-100'
         }`}
       >
-        🇬🇧 EN
+        EN
       </button>
     </div>
   );
 }
-
