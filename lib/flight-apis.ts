@@ -267,13 +267,37 @@ export async function searchRealFlights(
     return publicFlights;
   }
 
-  // 2. Intentar con AviationStack si está configurado
+  // 2. Intentar con ADS-B Exchange (datos en tiempo real)
+  try {
+    const { searchRouteFlightsADSB } = await import('./adsbexchange-api');
+    const { findAirport } = await import('./airports');
+    
+    const originAirport = findAirport(originIATA);
+    const destAirport = findAirport(destinationIATA);
+    
+    if (originAirport && destAirport) {
+      const adsbFlights = await searchRouteFlightsADSB(
+        originAirport.lat,
+        originAirport.lon,
+        destAirport.lat,
+        destAirport.lon
+      );
+      
+      if (adsbFlights.length > 0) {
+        return adsbFlights;
+      }
+    }
+  } catch (error) {
+    console.error('Error con ADS-B Exchange:', error);
+  }
+
+  // 3. Intentar con AviationStack si está configurado
   const aviationStackFlights = await searchFlightsAviationStack(originIATA, destinationIATA);
   if (aviationStackFlights.length > 0) {
     return aviationStackFlights;
   }
 
-  // 3. Si no hay resultados, intentar rutas inversas o alternativas
+  // 4. Si no hay resultados, intentar rutas inversas o alternativas
   const reverseRoute = await searchFlightsPublicData(destinationIATA, originIATA);
   
   return reverseRoute.length > 0 ? [] : []; // No mostrar ruta inversa, mejor no mostrar nada
