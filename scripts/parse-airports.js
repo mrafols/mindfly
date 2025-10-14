@@ -37,15 +37,12 @@ lines.forEach((line) => {
   const longitude = parseFloat(lon);
   if (isNaN(latitude) || isNaN(longitude)) return;
   
-  // Escapar comillas simples correctamente para JavaScript
-  const escapeSingleQuote = (str) => str.replace(/'/g, "\\'").replace(/\\/g, '\\\\');
-  
   airports.push({
     code: iata,
     icao: icao && icao !== '\\N' ? icao : undefined,
-    name: escapeSingleQuote(name),
-    city: escapeSingleQuote(city),
-    country: escapeSingleQuote(country),
+    name: name,
+    city: city,
+    country: country,
     lat: latitude,
     lon: longitude,
     timezone: tz && tz !== '\\N' ? tz : undefined
@@ -83,7 +80,15 @@ export const airportsDatabase: Airport[] = [
 
 airports.forEach((airport, index) => {
   const comma = index < airports.length - 1 ? ',' : '';
-  tsContent += `  { code: '${airport.code}'${airport.icao ? `, icao: '${airport.icao}'` : ''}, name: '${airport.name}', city: '${airport.city}', country: '${airport.country}', lat: ${airport.lat}, lon: ${airport.lon}${airport.timezone ? `, timezone: '${airport.timezone}'` : ''} }${comma}\n`;
+  // Usar JSON.stringify para escapar correctamente todas las cadenas
+  const code = JSON.stringify(airport.code);
+  const icao = airport.icao ? `, icao: ${JSON.stringify(airport.icao)}` : '';
+  const name = JSON.stringify(airport.name);
+  const city = JSON.stringify(airport.city);
+  const country = JSON.stringify(airport.country);
+  const timezone = airport.timezone ? `, timezone: ${JSON.stringify(airport.timezone)}` : '';
+  
+  tsContent += `  { code: ${code}${icao}, name: ${name}, city: ${city}, country: ${country}, lat: ${airport.lat}, lon: ${airport.lon}${timezone} }${comma}\n`;
 });
 
 tsContent += `];\n\n`;

@@ -78,7 +78,7 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
               <span className="text-slate-600 text-sm font-medium">📏 {t('distance', { distance: distance.toString() })}</span>
             </div>
             <div className="bg-white/70 backdrop-blur-sm rounded-xl px-6 py-3 border border-white/40 shadow-lg">
-              <span className="text-slate-600 text-sm font-medium">⏱️ {t('flightTime', { time: flightTime })}</span>
+              <span className="text-slate-600 text-sm font-medium">⏱️ {t('flightTime', { time: `${flightTime.hours}h ${flightTime.minutes}m` })}</span>
             </div>
           </div>
         </div>
