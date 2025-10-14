@@ -40,6 +40,22 @@
     "conditions": "Condiciones",
     "pressure": "Presión",
     "visibility": "Visibilidad",
+    "flights": {
+      "title": "✈️ Vuelos Disponibles Hoy",
+      "noFlights": "No se encontraron vuelos para esta ruta",
+      "loading": "Analizando condiciones del vuelo...",
+      "departure": "Salida",
+      "arrival": "Llegada",
+      "duration": "Duración",
+      "status": "Estado",
+      "selectFlight": "Selecciona un vuelo para ver el pronóstico detallado"
+    },
+    "turbulence": {
+      "title": "🌪️ Pronóstico de Turbulencias",
+      "severity": "Intensidad",
+      "probability": "Probabilidad",
+      "altitude": "Altitud de crucero"
+    },
     "explanation": {
       "title": "¿Qué Significa Todo Esto?",
       "intro": "Entendemos que volar puede generar ansiedad. Déjanos explicarte las condiciones de tu vuelo:",

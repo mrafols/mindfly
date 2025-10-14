@@ -3,8 +3,10 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { findAirport, calculateDistance, estimateFlightTime } from '@/lib/airports';
 import { getRouteWeather } from '@/lib/weather';
+import { searchFlights } from '@/lib/flights';
 import RouteMap from '@/components/RouteMap';
 import WeatherCard from '@/components/WeatherCard';
+import FlightSelector from '@/components/FlightSelector';
 
 interface ForecastPageProps {
   params: Promise<{ locale: string }>;
@@ -26,6 +28,9 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
   if (!originAirport || !destAirport) {
     notFound();
   }
+
+  // Buscar vuelos disponibles
+  const flights = await searchFlights(origin, destination);
 
   // Obtener datos meteorológicos
   const weather = await getRouteWeather(
@@ -89,6 +94,35 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
           destName={destAirport.city}
         />
       </div>
+
+        {/* Vuelos Disponibles */}
+        <div className="mb-16">
+          <FlightSelector
+            flights={flights}
+            originLat={originAirport.lat}
+            originLon={originAirport.lon}
+            destLat={destAirport.lat}
+            destLon={destAirport.lon}
+            labels={{
+              title: t('flights.title'),
+              noFlights: t('flights.noFlights'),
+              loading: t('flights.loading'),
+              flightLabels: {
+                departure: t('flights.departure'),
+                arrival: t('flights.arrival'),
+                duration: t('flights.duration'),
+                status: t('flights.status'),
+                selectFlight: t('flights.selectFlight'),
+              },
+              turbulenceLabels: {
+                title: t('turbulence.title'),
+                severity: t('turbulence.severity'),
+                probability: t('turbulence.probability'),
+                altitude: t('turbulence.altitude'),
+              },
+            }}
+          />
+        </div>
 
         {/* Weather Cards */}
         <div className="mb-16">

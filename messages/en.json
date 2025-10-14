@@ -40,6 +40,22 @@
     "conditions": "Conditions",
     "pressure": "Pressure",
     "visibility": "Visibility",
+    "flights": {
+      "title": "✈️ Available Flights Today",
+      "noFlights": "No flights found for this route",
+      "loading": "Analyzing flight conditions...",
+      "departure": "Departure",
+      "arrival": "Arrival",
+      "duration": "Duration",
+      "status": "Status",
+      "selectFlight": "Select a flight to see detailed forecast"
+    },
+    "turbulence": {
+      "title": "🌪️ Turbulence Forecast",
+      "severity": "Severity",
+      "probability": "Probability",
+      "altitude": "Cruise altitude"
+    },
     "explanation": {
       "title": "What Does This All Mean?",
       "intro": "We understand that flying can cause anxiety. Let us explain your flight conditions:",
