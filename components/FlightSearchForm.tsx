@@ -77,13 +77,13 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="bg-red-500/20 border border-red-400/50 text-white px-5 py-4 rounded-xl backdrop-blur-sm">
           {error}
         </div>
       )}
       
       <div className="relative">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-lg font-semibold text-white mb-3 drop-shadow-lg">
           {labels.origin}
         </label>
         <input
@@ -91,19 +91,19 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
           value={origin}
           onChange={(e) => handleOriginChange(e.target.value)}
           placeholder={labels.originPlaceholder}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-5 py-4 bg-white/90 backdrop-blur-sm border border-white/30 rounded-xl focus:ring-4 focus:ring-white/50 focus:border-white transition-all shadow-lg text-gray-800 placeholder-gray-500 text-lg"
         />
         {showOriginSuggestions && originSuggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-20 w-full mt-2 glass backdrop-blur-xl rounded-xl shadow-2xl max-h-80 overflow-y-auto border border-white/30">
             {originSuggestions.map((airport) => (
               <button
                 key={airport.code}
                 type="button"
                 onClick={() => selectOrigin(airport)}
-                className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors"
+                className="w-full text-left px-5 py-4 hover:bg-white/20 transition-all first:rounded-t-xl last:rounded-b-xl"
               >
-                <div className="font-semibold">{airport.city} ({airport.code})</div>
-                <div className="text-sm text-gray-600">{airport.name}, {airport.country}</div>
+                <div className="font-bold text-white text-lg">{airport.city} ({airport.code})</div>
+                <div className="text-sm text-white/80">{airport.name}, {airport.country}</div>
               </button>
             ))}
           </div>
@@ -111,7 +111,7 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
       </div>
 
       <div className="relative">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-lg font-semibold text-white mb-3 drop-shadow-lg">
           {labels.destination}
         </label>
         <input
@@ -119,19 +119,19 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
           value={destination}
           onChange={(e) => handleDestChange(e.target.value)}
           placeholder={labels.destinationPlaceholder}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-5 py-4 bg-white/90 backdrop-blur-sm border border-white/30 rounded-xl focus:ring-4 focus:ring-white/50 focus:border-white transition-all shadow-lg text-gray-800 placeholder-gray-500 text-lg"
         />
         {showDestSuggestions && destSuggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-20 w-full mt-2 glass backdrop-blur-xl rounded-xl shadow-2xl max-h-80 overflow-y-auto border border-white/30">
             {destSuggestions.map((airport) => (
               <button
                 key={airport.code}
                 type="button"
                 onClick={() => selectDestination(airport)}
-                className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors"
+                className="w-full text-left px-5 py-4 hover:bg-white/20 transition-all first:rounded-t-xl last:rounded-b-xl"
               >
-                <div className="font-semibold">{airport.city} ({airport.code})</div>
-                <div className="text-sm text-gray-600">{airport.name}, {airport.country}</div>
+                <div className="font-bold text-white text-lg">{airport.city} ({airport.code})</div>
+                <div className="text-sm text-white/80">{airport.name}, {airport.country}</div>
               </button>
             ))}
           </div>
@@ -140,9 +140,9 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
 
       <button
         type="submit"
-        className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+        className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-5 px-8 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform"
       >
-        {labels.searchButton}
+        ✈️ {labels.searchButton}
       </button>
     </form>
   );

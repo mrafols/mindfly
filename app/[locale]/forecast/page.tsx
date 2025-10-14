@@ -57,16 +57,23 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold text-blue-900 mb-4">
+      <div className="text-center mb-12">
+        <div className="inline-block mb-6 float-animation">
+          <span className="text-7xl drop-shadow-2xl">✈️</span>
+        </div>
+        <h1 className="text-5xl font-bold text-white mb-6 drop-shadow-2xl">
           {t('title')}
         </h1>
-        <p className="text-xl text-gray-700">
+        <p className="text-3xl text-white/90 drop-shadow-lg font-light">
           {t('route', { origin: originAirport.city, destination: destAirport.city })}
         </p>
-        <div className="flex justify-center gap-6 mt-4 text-gray-600">
-          <span>📏 {t('distance', { distance: distance.toString() })}</span>
-          <span>⏱️ {t('flightTime', { time: flightTime })}</span>
+        <div className="flex justify-center gap-8 mt-6">
+          <div className="glass backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20">
+            <span className="text-white text-lg font-semibold">📏 {t('distance', { distance: distance.toString() })}</span>
+          </div>
+          <div className="glass backdrop-blur-md rounded-2xl px-6 py-3 border border-white/20">
+            <span className="text-white text-lg font-semibold">⏱️ {t('flightTime', { time: flightTime })}</span>
+          </div>
         </div>
       </div>
 
@@ -83,8 +90,8 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
       </div>
 
       {/* Weather Cards */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-bold text-blue-900 mb-6 text-center">
+      <div className="mb-16">
+        <h2 className="text-4xl font-bold text-white mb-10 text-center drop-shadow-lg">
           {t('weatherConditions')}
         </h2>
         <div className="grid md:grid-cols-3 gap-6">
@@ -130,19 +137,19 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
       </div>
 
       {/* Detailed Explanation */}
-      <div className="bg-white rounded-xl shadow-lg p-8 mb-8">
-        <h2 className="text-3xl font-bold text-blue-900 mb-6">
+      <div className="glass backdrop-blur-lg rounded-3xl shadow-2xl p-10 mb-12 border border-white/20">
+        <h2 className="text-4xl font-bold text-white mb-8 text-center drop-shadow-lg">
           {t('explanation.title')}
         </h2>
         
-        <div className="space-y-6 text-gray-700">
-          <p className="text-lg">
+        <div className="space-y-6 text-white/90 text-lg">
+          <p className="text-xl text-center font-light">
             {t('explanation.intro')}
           </p>
 
           {/* Overall Conditions */}
-          <div className="bg-green-50 border-l-4 border-green-500 p-4">
-            <p className="font-semibold text-green-900">
+          <div className="bg-green-500/20 border-l-4 border-green-400 p-6 rounded-xl backdrop-blur-sm">
+            <p className="font-semibold text-white text-lg">
               {avgWindSpeed < 20 && avgVisibility > 8
                 ? t('explanation.goodConditions')
                 : t('explanation.normalConditions')}
@@ -151,27 +158,27 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
 
           {/* Turbulence Section */}
           {hasTurbulence && (
-            <div className="bg-blue-50 p-6 rounded-lg">
-              <h3 className="text-xl font-semibold text-blue-900 mb-3">
+            <div className="glass backdrop-blur-sm p-8 rounded-2xl border border-white/30">
+              <h3 className="text-2xl font-bold text-white mb-4">
                 {t('explanation.turbulence.title')}
               </h3>
-              <p className="mb-2">
+              <p className="mb-4 text-white/90">
                 {avgWindSpeed < 30
                   ? t('explanation.turbulence.light')
                   : t('explanation.turbulence.moderate')}
               </p>
-              <p className="text-sm">
+              <p className="text-sm text-white/80">
                 {t('explanation.turbulence.info')}
               </p>
             </div>
           )}
 
           {/* Wind Section */}
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <h3 className="text-xl font-semibold text-blue-900 mb-3">
+          <div className="glass backdrop-blur-sm p-8 rounded-2xl border border-white/30">
+            <h3 className="text-2xl font-bold text-white mb-4">
               {t('explanation.wind.title')}
             </h3>
-            <p>
+            <p className="text-white/90">
               {hasStrongWind
                 ? t('explanation.wind.strong')
                 : t('explanation.wind.normal')}
@@ -179,11 +186,11 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
           </div>
 
           {/* Visibility Section */}
-          <div className="bg-blue-50 p-6 rounded-lg">
-            <h3 className="text-xl font-semibold text-blue-900 mb-3">
+          <div className="glass backdrop-blur-sm p-8 rounded-2xl border border-white/30">
+            <h3 className="text-2xl font-bold text-white mb-4">
               {t('explanation.visibility.title')}
             </h3>
-            <p>
+            <p className="text-white/90">
               {hasReducedVisibility
                 ? t('explanation.visibility.reduced')
                 : t('explanation.visibility.good')}
@@ -191,9 +198,9 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
           </div>
 
           {/* Safety Reminder */}
-          <div className="bg-gradient-to-r from-blue-100 to-indigo-100 p-6 rounded-lg border-2 border-blue-300">
-            <p className="text-lg font-semibold text-blue-900">
-              💙 {t('explanation.safety')}
+          <div className="bg-gradient-to-r from-blue-500/30 to-indigo-500/30 p-8 rounded-2xl border-2 border-blue-400/50 backdrop-blur-sm">
+            <p className="text-xl font-semibold text-white flex items-center gap-3">
+              <span className="text-3xl">💙</span> {t('explanation.safety')}
             </p>
           </div>
         </div>
@@ -203,9 +210,9 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
       <div className="text-center">
         <Link
           href={`/${locale}`}
-          className="inline-block bg-blue-600 text-white py-3 px-8 rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-lg hover:shadow-xl"
+          className="inline-block bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-4 px-10 rounded-xl font-bold text-lg hover:from-blue-600 hover:to-indigo-700 transition-all shadow-2xl hover:shadow-blue-500/50 hover:scale-105 transform"
         >
-          {t('newSearch')}
+          ✈️ {t('newSearch')}
         </Link>
       </div>
     </div>

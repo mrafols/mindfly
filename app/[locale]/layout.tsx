@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import SkyBackground from '@/components/SkyBackground';
 import './globals.css';
 
 const locales = ['es', 'en'];
@@ -34,26 +35,31 @@ export default async function LocaleLayout({
         <meta name="keywords" content="vuelo, meteorología, clima, aviación, miedo a volar, ansiedad, aeropuertos, pronóstico" />
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>" />
       </head>
-      <body className="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+      <body className="min-h-screen relative overflow-x-hidden">
+        <SkyBackground />
         <NextIntlClientProvider messages={messages}>
-          <nav className="bg-white shadow-md">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-              <div className="flex justify-between items-center">
-                <div className="flex items-center space-x-3">
-                  <span className="text-3xl">✈️</span>
-                  <h1 className="text-2xl font-bold text-blue-900">MindFly</h1>
+          <div className="relative z-10">
+            <nav className="glass-dark backdrop-blur-xl">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center space-x-3 float-animation">
+                    <span className="text-4xl drop-shadow-lg">✈️</span>
+                    <h1 className="text-3xl font-bold text-white drop-shadow-lg tracking-tight">
+                      MindFly
+                    </h1>
+                  </div>
+                  <LanguageSwitcher />
                 </div>
-                <LanguageSwitcher />
               </div>
-            </div>
-          </nav>
-          <main>{children}</main>
-          <footer className="bg-white mt-16 py-8">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-gray-600">
-              <p>© 2025 MindFly - Vuela con tranquilidad</p>
-              <p className="text-sm mt-2">Datos meteorológicos proporcionados por Open-Meteo</p>
-            </div>
-          </footer>
+            </nav>
+            <main className="relative">{children}</main>
+            <footer className="glass-dark backdrop-blur-xl mt-16 py-10 border-t border-white/10">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white/90">
+                <p className="text-lg font-medium">© 2025 MindFly - Vuela con tranquilidad</p>
+                <p className="text-sm mt-2 text-white/70">Datos meteorológicos proporcionados por Open-Meteo</p>
+              </div>
+            </footer>
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>
