@@ -94,23 +94,115 @@ export default function FlightSelector({
     );
   }
 
+  // Organizar vuelos por estado
+  const scheduledFlights = flights.filter(f => f.status === 'scheduled');
+  const activeFlights = flights.filter(f => f.status === 'active');
+  const landedFlights = flights.filter(f => f.status === 'landed');
+  const cancelledFlights = flights.filter(f => f.status === 'cancelled');
+
   return (
     <div className="space-y-8">
       {/* Lista de vuelos */}
       <div>
-        <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center">
-          {labels.title}
-        </h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {flights.map((flight) => (
-            <FlightCard
-              key={flight.flightNumber}
-              flight={flight}
-              isSelected={selectedFlight?.flightNumber === flight.flightNumber}
-              onSelect={() => setSelectedFlight(flight)}
-              labels={labels.flightLabels}
-            />
-          ))}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-bold text-gradient">
+            {labels.title}
+          </h2>
+          <div className="text-sm text-slate-600 bg-white/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/40">
+            <span className="font-semibold">{flights.length}</span> vuelos
+          </div>
+        </div>
+        
+        <div className="space-y-6">
+          {/* Vuelos activos (en vuelo ahora) */}
+          {activeFlights.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-green-700 mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                En vuelo ahora ({activeFlights.length})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {activeFlights.map((flight) => (
+                  <FlightCard
+                    key={flight.flightNumber}
+                    flight={flight}
+                    isSelected={selectedFlight?.flightNumber === flight.flightNumber}
+                    onSelect={() => setSelectedFlight(flight)}
+                    labels={labels.flightLabels}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Vuelos programados (próximos) */}
+          {scheduledFlights.length > 0 && (
+            <div>
+              <h3 className="text-sm font-semibold text-blue-700 mb-3 flex items-center gap-2">
+                <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+                Próximos vuelos ({scheduledFlights.length})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {scheduledFlights.map((flight) => (
+                  <FlightCard
+                    key={flight.flightNumber}
+                    flight={flight}
+                    isSelected={selectedFlight?.flightNumber === flight.flightNumber}
+                    onSelect={() => setSelectedFlight(flight)}
+                    labels={labels.flightLabels}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Vuelos aterrizados */}
+          {landedFlights.length > 0 && (
+            <details className="group">
+              <summary className="cursor-pointer list-none">
+                <h3 className="text-sm font-semibold text-gray-600 mb-3 flex items-center gap-2 hover:text-gray-800 transition-colors">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                  Aterrizados ({landedFlights.length})
+                  <span className="ml-auto text-xs opacity-60 group-open:rotate-180 transition-transform">▼</span>
+                </h3>
+              </summary>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+                {landedFlights.map((flight) => (
+                  <FlightCard
+                    key={flight.flightNumber}
+                    flight={flight}
+                    isSelected={selectedFlight?.flightNumber === flight.flightNumber}
+                    onSelect={() => setSelectedFlight(flight)}
+                    labels={labels.flightLabels}
+                  />
+                ))}
+              </div>
+            </details>
+          )}
+
+          {/* Vuelos cancelados */}
+          {cancelledFlights.length > 0 && (
+            <details className="group">
+              <summary className="cursor-pointer list-none">
+                <h3 className="text-sm font-semibold text-red-700 mb-3 flex items-center gap-2 hover:text-red-800 transition-colors">
+                  <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                  Cancelados ({cancelledFlights.length})
+                  <span className="ml-auto text-xs opacity-60 group-open:rotate-180 transition-transform">▼</span>
+                </h3>
+              </summary>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
+                {cancelledFlights.map((flight) => (
+                  <FlightCard
+                    key={flight.flightNumber}
+                    flight={flight}
+                    isSelected={selectedFlight?.flightNumber === flight.flightNumber}
+                    onSelect={() => setSelectedFlight(flight)}
+                    labels={labels.flightLabels}
+                  />
+                ))}
+              </div>
+            </details>
+          )}
         </div>
       </div>
 
