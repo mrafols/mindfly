@@ -243,6 +243,30 @@ function getCommonRoutes(origin: string, destination: string): Flight[] {
     'MAH-BCN': [
       { airline: 'Vueling', flightNumber: 'VY3951', aircraft: 'A320', departureHour: 9, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
     ],
+    // Barcelona - Menorca (BCN-MAH) - Rutas muy frecuentes
+    'BCN-MAH': [
+      { airline: 'Ryanair', flightNumber: 'FR2345', aircraft: 'B73H', departureHour: 11, departureMinute: 0, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3900', aircraft: 'A32A', departureHour: 16, departureMinute: 35, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3902', aircraft: 'A32A', departureHour: 17, departureMinute: 5, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3904', aircraft: 'A32A', departureHour: 17, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3906', aircraft: 'A32A', departureHour: 18, departureMinute: 0, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3908', aircraft: 'A32A', departureHour: 18, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3910', aircraft: 'A32A', departureHour: 18, departureMinute: 50, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3912', aircraft: 'A32A', departureHour: 20, departureMinute: 5, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3914', aircraft: 'A321', departureHour: 20, departureMinute: 35, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3916', aircraft: 'A321', departureHour: 21, departureMinute: 25, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3918', aircraft: 'A32A', departureHour: 21, departureMinute: 25, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3920', aircraft: 'A321', departureHour: 21, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3922', aircraft: 'A32A', departureHour: 21, departureMinute: 35, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3924', aircraft: 'A32A', departureHour: 21, departureMinute: 45, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3926', aircraft: 'A319', departureHour: 22, departureMinute: 0, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3928', aircraft: 'A32A', departureHour: 22, departureMinute: 25, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3930', aircraft: 'A32A', departureHour: 22, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3932', aircraft: 'A32A', departureHour: 22, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3934', aircraft: 'A321', departureHour: 6, departureMinute: 50, durationHours: 1, durationMinutes: 0, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3936', aircraft: 'A319', departureHour: 6, departureMinute: 50, durationHours: 1, durationMinutes: 0, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3938', aircraft: 'A32A', departureHour: 6, departureMinute: 50, durationHours: 1, durationMinutes: 0, frequency: 'daily' },
+    ],
   };
 
   const routes = realRoutes[routeKey] || [];
