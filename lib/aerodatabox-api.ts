@@ -112,7 +112,10 @@ export async function searchFlightsAeroDataBox(
 
     const data = await response.json();
     
+    console.log(`📊 AeroDataBox respuesta para ${originIATA}: ${data.departures?.length || 0} salidas totales`);
+    
     if (!data.departures || data.departures.length === 0) {
+      console.log(`⚠️ AeroDataBox: Sin datos de salidas para ${originIATA}`);
       return [];
     }
 
@@ -124,6 +127,8 @@ export async function searchFlightsAeroDataBox(
       .map((flight: AeroDataBoxFlight) => parseAeroDataBoxFlight(flight))
       .filter((flight: Flight | null): flight is Flight => flight !== null);
 
+    console.log(`✅ AeroDataBox: ${flights.length} vuelos encontrados ${originIATA}→${destinationIATA}`);
+    
     return flights;
   } catch (error) {
     console.error('Error con AeroDataBox:', error);
@@ -262,10 +267,15 @@ export async function getFlightByNumber(
 
     const data = await response.json();
     
+    console.log(`🔍 AeroDataBox búsqueda de vuelo ${flightNumber}: ${data?.length || 0} resultados`);
+    
     if (!data || data.length === 0) {
+      console.log(`⚠️ AeroDataBox: Vuelo ${flightNumber} no encontrado`);
       return null;
     }
 
+    console.log(`📋 Primer resultado:`, JSON.stringify(data[0], null, 2).slice(0, 500));
+    
     const flightData = parseAeroDataBoxFlight(data[0]);
     
     // Añadir códigos IATA de origen y destino
