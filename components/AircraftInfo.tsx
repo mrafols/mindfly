@@ -18,8 +18,28 @@ export default function AircraftInfo({ aircraftCode, labels }: AircraftInfoProps
   
   if (!aircraft) {
     return (
-      <div className="bg-white/70 backdrop-blur-xl rounded-2xl p-6 border border-white/40 shadow-lg">
-        <p className="text-slate-600 text-center">ℹ️ Información de aeronave no disponible</p>
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 backdrop-blur-xl rounded-2xl p-6 border border-blue-200 shadow-lg">
+        <h3 className="text-xl font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <span className="text-2xl">✈️</span>
+          {labels.title}
+        </h3>
+        <div className="bg-white/60 rounded-xl p-4 border border-blue-100">
+          <p className="text-slate-700 mb-2">
+            <strong>Código de aeronave:</strong> {aircraftCode || 'No especificado'}
+          </p>
+          <p className="text-sm text-slate-600">
+            ℹ️ La información detallada de esta aeronave no está disponible en nuestra base de datos, 
+            pero el pronóstico de turbulencias se ha generado correctamente basándose en las condiciones 
+            meteorológicas de la ruta.
+          </p>
+        </div>
+        <div className="mt-4 bg-blue-100 rounded-lg p-3">
+          <p className="text-xs text-blue-900">
+            💡 <strong>Nota:</strong> Todos los aviones comerciales cumplen con estrictos estándares de 
+            seguridad internacionales y están diseñados para manejar turbulencias con amplios márgenes de 
+            seguridad.
+          </p>
+        </div>
       </div>
     );
   }
