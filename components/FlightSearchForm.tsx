@@ -11,6 +11,9 @@ interface FlightSearchFormProps {
     originPlaceholder: string;
     destination: string;
     destinationPlaceholder: string;
+    flightNumber: string;
+    flightNumberPlaceholder: string;
+    flightNumberHelper: string;
     searchButton: string;
   };
   errorMessage: string;
@@ -19,6 +22,7 @@ interface FlightSearchFormProps {
 export default function FlightSearchForm({ labels, errorMessage }: FlightSearchFormProps) {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
+  const [flightNumber, setFlightNumber] = useState('');
   const [originSuggestions, setOriginSuggestions] = useState<Airport[]>([]);
   const [destSuggestions, setDestSuggestions] = useState<Airport[]>([]);
   const [showOriginSuggestions, setShowOriginSuggestions] = useState(false);
@@ -49,6 +53,12 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
     }
   };
 
+  const handleFlightNumberChange = (value: string) => {
+    // Convertir automáticamente a mayúsculas y limpiar
+    const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    setFlightNumber(cleaned);
+  };
+
   const selectOrigin = (airport: Airport) => {
     setOrigin(`${airport.city} (${airport.code})`);
     setShowOriginSuggestions(false);
@@ -61,16 +71,25 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!origin || !destination) {
+    
+    // Validar que al menos tengamos número de vuelo O origen+destino
+    if (!flightNumber && (!origin || !destination)) {
       setError(errorMessage);
       return;
     }
+    
     setError('');
     
     const originCode = origin.match(/\(([A-Z]{3})\)/)?.[1] || origin;
     const destCode = destination.match(/\(([A-Z]{3})\)/)?.[1] || destination;
     
-    router.push(`/${locale}/forecast?origin=${originCode}&destination=${destCode}`);
+    // Construir URL con parámetros
+    const params = new URLSearchParams();
+    if (originCode) params.set('origin', originCode);
+    if (destCode) params.set('destination', destCode);
+    if (flightNumber) params.set('flight', flightNumber);
+    
+    router.push(`/${locale}/forecast?${params.toString()}`);
   };
 
   return (
@@ -80,6 +99,34 @@ export default function FlightSearchForm({ labels, errorMessage }: FlightSearchF
           {error}
         </div>
       )}
+      
+      {/* Número de Vuelo - Campo destacado */}
+      <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl p-6">
+        <label className="block text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">
+          ✈️ {labels.flightNumber}
+          <span className="text-xs font-normal text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">
+            Recomendado
+          </span>
+        </label>
+        <input
+          type="text"
+          value={flightNumber}
+          onChange={(e) => handleFlightNumberChange(e.target.value)}
+          placeholder={labels.flightNumberPlaceholder}
+          className="w-full px-5 py-4 bg-white border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-slate-900 placeholder-slate-400 font-bold text-lg"
+          maxLength={10}
+        />
+        <p className="text-xs text-blue-600 mt-2">
+          💡 {labels.flightNumberHelper}
+        </p>
+      </div>
+
+      {/* Separador */}
+      <div className="flex items-center gap-4">
+        <div className="flex-1 h-px bg-slate-200"></div>
+        <span className="text-xs text-slate-500 font-semibold">O BUSCAR POR RUTA</span>
+        <div className="flex-1 h-px bg-slate-200"></div>
+      </div>
       
       <div className="relative">
         <label className="block text-sm font-semibold text-slate-700 mb-2">

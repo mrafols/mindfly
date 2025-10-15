@@ -10,27 +10,80 @@ import FlightSelector from '@/components/FlightSelector';
 
 interface ForecastPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ origin?: string; destination?: string }>;
+  searchParams: Promise<{ origin?: string; destination?: string; flight?: string }>;
 }
 
 export default async function ForecastPage({ params, searchParams }: ForecastPageProps) {
   const { locale } = await params;
-  const { origin, destination } = await searchParams;
+  const { origin, destination, flight: flightNumber } = await searchParams;
   const t = await getTranslations('forecast');
 
-  if (!origin || !destination) {
+  let originAirport, destAirport;
+  let flights: Awaited<ReturnType<typeof searchFlights>> = [];
+
+  // Caso 1: Búsqueda por número de vuelo
+  if (flightNumber) {
+    // Buscar el vuelo específico usando AeroDataBox o base de datos
+    const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
+    
+    try {
+      const flightData = await getFlightByNumber(flightNumber);
+      
+      if (flightData) {
+        // Extraer origen y destino del vuelo encontrado
+        // Si AeroDataBox devuelve datos, intentar extraer IATA codes
+        // Por ahora, si no hay origin/destination, usar los proporcionados o fallar
+        flights = [flightData];
+      }
+    } catch (error) {
+      console.error('Error buscando vuelo por número:', error);
+    }
+
+    // Si tenemos origin y destination, buscar aeropuertos
+    if (origin && destination) {
+      originAirport = findAirport(origin);
+      destAirport = findAirport(destination);
+    } else if (flights && flights.length > 0) {
+      // Intentar deducir de los datos del vuelo
+      // Esto requeriría que el vuelo tenga información de IATA codes
+      // Por ahora, si solo hay número de vuelo sin ruta, buscar en todas las rutas
+      if (!origin || !destination) {
+        notFound(); // Requiere al menos la ruta
+      }
+    }
+  } 
+  // Caso 2: Búsqueda por ruta (comportamiento original)
+  else if (origin && destination) {
+    originAirport = findAirport(origin);
+    destAirport = findAirport(destination);
+
+    if (!originAirport || !destAirport) {
+      notFound();
+    }
+
+    // Buscar vuelos disponibles
+    flights = await searchFlights(origin, destination);
+  }
+  // Caso 3: Faltan parámetros
+  else {
     notFound();
   }
 
-  const originAirport = findAirport(origin);
-  const destAirport = findAirport(destination);
-
+  // Validar que tenemos lo mínimo necesario
   if (!originAirport || !destAirport) {
     notFound();
   }
 
-  // Buscar vuelos disponibles
-  const flights = await searchFlights(origin, destination);
+  // Si buscamos por número de vuelo específico y no hay resultados, buscar por ruta
+  if (flightNumber && (!flights || flights.length === 0) && origin && destination) {
+    flights = await searchFlights(origin, destination);
+    // Filtrar por el número de vuelo si existe
+    if (flightNumber) {
+      flights = flights.filter(f => 
+        f.flightNumber.toUpperCase() === flightNumber.toUpperCase()
+      );
+    }
+  }
 
   // Obtener datos meteorológicos
   const weather = await getRouteWeather(

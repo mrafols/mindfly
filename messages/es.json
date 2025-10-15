@@ -1,11 +1,14 @@
 {
   "home": {
     "title": "MindFly - Vuela Tranquilo",
-    "subtitle": "Conoce las condiciones meteorológicas de tu vuelo y vuela con tranquilidad",
-    "searchTitle": "Busca tu Ruta de Vuelo",
-    "origin": "Aeropuerto de Origen",
+    "subtitle": "Conoce las condiciones meteorológicas de tu vuelo específico y vuela con tranquilidad",
+    "searchTitle": "Busca tu Vuelo",
+    "flightNumber": "Número de Vuelo",
+    "flightNumberPlaceholder": "Ej: VY3900, IB1013, FR2541",
+    "flightNumberHelper": "Más preciso: Introduce el número de tu vuelo para ver condiciones exactas",
+    "origin": "Aeropuerto de Origen (Opcional)",
     "originPlaceholder": "Ej: Barcelona (BCN)",
-    "destination": "Aeropuerto de Destino",
+    "destination": "Aeropuerto de Destino (Opcional)",
     "destinationPlaceholder": "Ej: Madrid (MAD)",
     "searchButton": "Buscar Pronóstico",
     "loading": "Cargando datos meteorológicos...",

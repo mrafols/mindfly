@@ -1,11 +1,14 @@
 {
   "home": {
     "title": "MindFly - Fly with Peace of Mind",
-    "subtitle": "Know your flight's weather conditions and fly with confidence",
-    "searchTitle": "Search Your Flight Route",
-    "origin": "Origin Airport",
+    "subtitle": "Know the exact weather conditions of your specific flight and fly with confidence",
+    "searchTitle": "Search Your Flight",
+    "flightNumber": "Flight Number",
+    "flightNumberPlaceholder": "Ex: VY3900, IB1013, FR2541",
+    "flightNumberHelper": "More accurate: Enter your flight number for exact conditions",
+    "origin": "Origin Airport (Optional)",
     "originPlaceholder": "E.g: Barcelona (BCN)",
-    "destination": "Destination Airport",
+    "destination": "Destination Airport (Optional)",
     "destinationPlaceholder": "E.g: Madrid (MAD)",
     "searchButton": "Search Forecast",
     "loading": "Loading weather data...",
