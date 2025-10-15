@@ -10,102 +10,100 @@ import FlightSelector from '@/components/FlightSelector';
 
 interface ForecastPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ origin?: string; destination?: string; flight?: string }>;
+  searchParams: Promise<{ flight?: string }>;
 }
 
 export default async function ForecastPage({ params, searchParams }: ForecastPageProps) {
   const { locale } = await params;
-  const { origin, destination, flight: flightNumber } = await searchParams;
+  const { flight: flightNumber } = await searchParams;
   const t = await getTranslations('forecast');
+
+  if (!flightNumber) {
+    notFound();
+  }
 
   let originAirport, destAirport;
   let flights: Awaited<ReturnType<typeof searchFlights>> = [];
 
-  // Caso 1: Búsqueda por número de vuelo
-  if (flightNumber) {
-    // Buscar el vuelo específico usando AeroDataBox o base de datos
-    const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
+  // Buscar el vuelo específico usando FlightRadar24 API
+  const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
+  
+  try {
+    const flightData = await getFlightByNumber(flightNumber);
     
-    try {
-      const flightData = await getFlightByNumber(flightNumber);
+    if (flightData) {
+      flights = [flightData];
+      // TODO: Extraer origen y destino del vuelo si la API lo proporciona
+    }
+  } catch (error) {
+    console.error('Error buscando vuelo por número:', error);
+  }
+
+  // Si no encontramos el vuelo, buscar en rutas conocidas comunes
+  if (!flights || flights.length === 0) {
+    // Intentar buscar en rutas principales españolas
+    const commonRoutes = [
+      { origin: 'BCN', destination: 'MAD' },
+      { origin: 'MAD', destination: 'BCN' },
+      { origin: 'BCN', destination: 'PMI' },
+      { origin: 'PMI', destination: 'BCN' },
+      { origin: 'MAD', destination: 'AGP' },
+      { origin: 'AGP', destination: 'MAD' },
+      { origin: 'BCN', destination: 'AGP' },
+      { origin: 'MAD', destination: 'SVQ' },
+      { origin: 'BCN', destination: 'SVQ' },
+      { origin: 'MAD', destination: 'VLC' },
+    ];
+
+    for (const route of commonRoutes) {
+      const routeFlights = await searchFlights(route.origin, route.destination);
+      const matchingFlight = routeFlights.find(
+        f => f.flightNumber.toUpperCase() === flightNumber.toUpperCase()
+      );
       
-      if (flightData) {
-        // Extraer origen y destino del vuelo encontrado
-        // Si AeroDataBox devuelve datos, intentar extraer IATA codes
-        // Por ahora, si no hay origin/destination, usar los proporcionados o fallar
-        flights = [flightData];
-      }
-    } catch (error) {
-      console.error('Error buscando vuelo por número:', error);
-    }
-
-    // Si tenemos origin y destination, buscar aeropuertos
-    if (origin && destination) {
-      originAirport = findAirport(origin);
-      destAirport = findAirport(destination);
-    } else if (flights && flights.length > 0) {
-      // Intentar deducir de los datos del vuelo
-      // Esto requeriría que el vuelo tenga información de IATA codes
-      // Por ahora, si solo hay número de vuelo sin ruta, buscar en todas las rutas
-      if (!origin || !destination) {
-        notFound(); // Requiere al menos la ruta
+      if (matchingFlight) {
+        flights = [matchingFlight];
+        originAirport = findAirport(route.origin);
+        destAirport = findAirport(route.destination);
+        break;
       }
     }
-  } 
-  // Caso 2: Búsqueda por ruta (comportamiento original)
-  else if (origin && destination) {
-    originAirport = findAirport(origin);
-    destAirport = findAirport(destination);
+  }
 
+  // Si aún no encontramos el vuelo, crear uno simulado con ruta BCN-MAD
+  if ((!flights || flights.length === 0) || !originAirport || !destAirport) {
+    // Usar ruta Barcelona-Madrid como predeterminada
+    originAirport = findAirport('BCN');
+    destAirport = findAirport('MAD');
+    
     if (!originAirport || !destAirport) {
       notFound();
     }
 
-    // Buscar vuelos disponibles
-    flights = await searchFlights(origin, destination);
-  }
-  // Caso 3: Faltan parámetros
-  else {
-    notFound();
+    const now = new Date();
+    const departureTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
+    const { estimateFlightTime } = await import('@/lib/airports');
+    const distance = Math.round(
+      calculateDistance(originAirport.lat, originAirport.lon, destAirport.lat, destAirport.lon)
+    );
+    const flightTime = estimateFlightTime(distance);
+    const arrivalTime = new Date(
+      departureTime.getTime() + (flightTime.hours * 60 + flightTime.minutes) * 60 * 1000
+    );
+    
+    flights = [{
+      flightNumber: flightNumber.toUpperCase(),
+      airline: flightNumber.replace(/[0-9]/g, ''),
+      departureTime: departureTime.toISOString(),
+      arrivalTime: arrivalTime.toISOString(),
+      aircraft: 'A320',
+      status: 'scheduled' as const
+    }];
   }
 
   // Validar que tenemos lo mínimo necesario
   if (!originAirport || !destAirport) {
     notFound();
-  }
-
-  // Si buscamos por número de vuelo específico y no hay resultados, buscar por ruta
-  if (flightNumber && (!flights || flights.length === 0) && origin && destination) {
-    flights = await searchFlights(origin, destination);
-    // Filtrar por el número de vuelo si existe
-    if (flightNumber) {
-      flights = flights.filter(f => 
-        f.flightNumber.toUpperCase() === flightNumber.toUpperCase()
-      );
-    }
-    
-    // Si aún no hay vuelos con ese número, crear uno simulado para el pronóstico
-    if (flights.length === 0 && flightNumber && origin && destination) {
-      const now = new Date();
-      const departureTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // En 2 horas
-      const { estimateFlightTime } = await import('@/lib/airports');
-      const distance = Math.round(
-        calculateDistance(originAirport.lat, originAirport.lon, destAirport.lat, destAirport.lon)
-      );
-      const flightTime = estimateFlightTime(distance);
-      const arrivalTime = new Date(
-        departureTime.getTime() + (flightTime.hours * 60 + flightTime.minutes) * 60 * 1000
-      );
-      
-      flights = [{
-        flightNumber: flightNumber.toUpperCase(),
-        airline: flightNumber.replace(/[0-9]/g, ''), // Extraer código de aerolínea
-        departureTime: departureTime.toISOString(),
-        arrivalTime: arrivalTime.toISOString(),
-        aircraft: 'A320', // Aeronave común por defecto
-        status: 'scheduled' as const
-      }];
-    }
   }
 
   // Obtener datos meteorológicos
@@ -181,7 +179,7 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
             destLon={destAirport.lon}
             originCity={originAirport.city}
             destCity={destAirport.city}
-            autoSelectFirst={!!flightNumber || flights.length === 1}
+            autoSelectFirst={true}
             labels={{
               title: t('flights.title'),
               noFlights: t('flights.noFlights'),

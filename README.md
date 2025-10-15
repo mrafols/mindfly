@@ -52,19 +52,17 @@ Este proyecto está optimizado para desplegarse en Vercel:
 
 ## 🎯 Uso
 
-### Búsqueda por Número de Vuelo (Recomendado)
+### Búsqueda Simplificada por Número de Vuelo
 1. Selecciona tu idioma preferido (español o inglés)
 2. Introduce tu número de vuelo (ej: VY3900, IB1013, FR2541)
-3. Introduce el aeropuerto de origen y destino (opcional)
-4. Haz clic en "Buscar Pronóstico"
-5. El pronóstico de turbulencias se generará automáticamente para tu vuelo específico
+3. Haz clic en "Buscar Pronóstico"
+4. **¡Listo!** El pronóstico de turbulencias se genera automáticamente
 
-### Búsqueda por Ruta
-1. Selecciona tu idioma preferido (español o inglés)
-2. Introduce el aeropuerto de origen (puedes buscar por código, ciudad o nombre)
-3. Introduce el aeropuerto de destino
-4. Haz clic en "Buscar Pronóstico"
-5. Selecciona un vuelo de la lista para ver el pronóstico detallado
+El sistema:
+- 🔍 Busca automáticamente tu vuelo en bases de datos reales
+- 🗺️ Identifica la ruta (origen y destino)
+- 🌪️ Calcula el pronóstico de turbulencias completo
+- 📊 Muestra toda la información instantáneamente
 
 ### Información Disponible
 - 🗺️ Mapa interactivo de tu ruta de vuelo

@@ -26,10 +26,6 @@ export default async function HomePage() {
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl shadow-blue-500/10 p-8 md:p-10 border border-white/20">
           <FlightSearchForm
             labels={{
-              origin: t('origin'),
-              originPlaceholder: t('originPlaceholder'),
-              destination: t('destination'),
-              destinationPlaceholder: t('destinationPlaceholder'),
               flightNumber: t('flightNumber'),
               flightNumberPlaceholder: t('flightNumberPlaceholder'),
               flightNumberHelper: t('flightNumberHelper'),

@@ -39,14 +39,14 @@ export default async function LocaleLayout({
           <nav className="bg-white/70 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
               <div className="flex justify-between items-center">
-                <div className="flex items-center gap-3">
+                <a href={`/${locale}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
                   <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-lg">
                     <span className="text-xl">✈️</span>
                   </div>
                   <h1 className="text-xl font-bold text-gradient">
                     MindFly
                   </h1>
-                </div>
+                </a>
                 <LanguageSwitcher />
               </div>
             </div>
