@@ -110,7 +110,7 @@
     "newSearch": "Search Another Route"
   },
   "errors": {
-    "fillFields": "Please fill in both fields",
+    "fillFields": "Please enter a flight number or select origin and destination",
     "loadingError": "Error loading weather data. Please try again.",
     "invalidAirport": "Could not find the airport. Please verify the names."
   }

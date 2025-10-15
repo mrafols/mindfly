@@ -83,6 +83,29 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
         f.flightNumber.toUpperCase() === flightNumber.toUpperCase()
       );
     }
+    
+    // Si aún no hay vuelos con ese número, crear uno simulado para el pronóstico
+    if (flights.length === 0 && flightNumber && origin && destination) {
+      const now = new Date();
+      const departureTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // En 2 horas
+      const { estimateFlightTime } = await import('@/lib/airports');
+      const distance = Math.round(
+        calculateDistance(originAirport.lat, originAirport.lon, destAirport.lat, destAirport.lon)
+      );
+      const flightTime = estimateFlightTime(distance);
+      const arrivalTime = new Date(
+        departureTime.getTime() + (flightTime.hours * 60 + flightTime.minutes) * 60 * 1000
+      );
+      
+      flights = [{
+        flightNumber: flightNumber.toUpperCase(),
+        airline: flightNumber.replace(/[0-9]/g, ''), // Extraer código de aerolínea
+        departureTime: departureTime.toISOString(),
+        arrivalTime: arrivalTime.toISOString(),
+        aircraft: 'A320', // Aeronave común por defecto
+        status: 'scheduled' as const
+      }];
+    }
   }
 
   // Obtener datos meteorológicos
@@ -158,6 +181,7 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
             destLon={destAirport.lon}
             originCity={originAirport.city}
             destCity={destAirport.city}
+            autoSelectFirst={!!flightNumber || flights.length === 1}
             labels={{
               title: t('flights.title'),
               noFlights: t('flights.noFlights'),

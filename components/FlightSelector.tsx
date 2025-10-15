@@ -16,6 +16,7 @@ interface FlightSelectorProps {
   destLon: number;
   originCity: string;
   destCity: string;
+  autoSelectFirst?: boolean; // Nueva prop para selección automática
   labels: {
     title: string;
     noFlights: string;
@@ -69,11 +70,25 @@ export default function FlightSelector({
   destLon,
   originCity,
   destCity,
+  autoSelectFirst = false,
   labels
 }: FlightSelectorProps) {
   const [selectedFlight, setSelectedFlight] = useState<Flight | null>(null);
   const [forecast, setForecast] = useState<FlightForecast | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Auto-seleccionar el primer vuelo si autoSelectFirst está habilitado
+  useEffect(() => {
+    if (autoSelectFirst && flights.length > 0 && !selectedFlight) {
+      // Priorizar vuelos activos, luego programados
+      const flightToSelect = 
+        flights.find(f => f.status === 'active') ||
+        flights.find(f => f.status === 'scheduled') ||
+        flights[0];
+      
+      setSelectedFlight(flightToSelect);
+    }
+  }, [flights, autoSelectFirst, selectedFlight]);
 
   useEffect(() => {
     if (selectedFlight) {

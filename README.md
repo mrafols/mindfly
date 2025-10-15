@@ -4,9 +4,13 @@ MindFly es una aplicación web diseñada para tranquilizar a las personas que si
 
 ## 🌟 Características
 
+- ✈️ **Búsqueda por Número de Vuelo**: Busca tu vuelo específico para obtener pronóstico personalizado
+- 🌪️ **Pronóstico de Turbulencias**: Análisis detallado de turbulencias a lo largo de toda la ruta
 - 🌍 **Búsqueda de Rutas**: Busca entre más de 30 aeropuertos principales del mundo
 - 🌤️ **Datos Meteorológicos en Tiempo Real**: Información actualizada del clima en origen, destino y punto medio de la ruta
 - 🗺️ **Visualización de Rutas**: Mapas interactivos que muestran tu trayectoria de vuelo
+- 📊 **Gráficos de Turbulencias**: Visualización detallada de la probabilidad y severidad de turbulencias
+- ✈️ **Información de Aeronaves**: Detalles sobre el tipo de avión y su capacidad para manejar turbulencias
 - 📖 **Explicaciones Detalladas**: Información clara y tranquilizadora sobre las condiciones meteorológicas
 - 🌐 **Multiidioma**: Disponible en español e inglés
 - 📱 **Diseño Responsivo**: Funciona perfectamente en móviles, tabletas y escritorio
@@ -48,12 +52,27 @@ Este proyecto está optimizado para desplegarse en Vercel:
 
 ## 🎯 Uso
 
+### Búsqueda por Número de Vuelo (Recomendado)
+1. Selecciona tu idioma preferido (español o inglés)
+2. Introduce tu número de vuelo (ej: VY3900, IB1013, FR2541)
+3. Introduce el aeropuerto de origen y destino (opcional)
+4. Haz clic en "Buscar Pronóstico"
+5. El pronóstico de turbulencias se generará automáticamente para tu vuelo específico
+
+### Búsqueda por Ruta
 1. Selecciona tu idioma preferido (español o inglés)
 2. Introduce el aeropuerto de origen (puedes buscar por código, ciudad o nombre)
 3. Introduce el aeropuerto de destino
 4. Haz clic en "Buscar Pronóstico"
-5. Visualiza el mapa de tu ruta y las condiciones meteorológicas
-6. Lee las explicaciones detalladas sobre lo que significa cada condición
+5. Selecciona un vuelo de la lista para ver el pronóstico detallado
+
+### Información Disponible
+- 🗺️ Mapa interactivo de tu ruta de vuelo
+- 🌤️ Condiciones meteorológicas en origen, destino y ruta
+- 🌪️ Pronóstico detallado de turbulencias a lo largo del vuelo
+- 📊 Gráficos de probabilidad y severidad de turbulencias
+- ✈️ Información sobre tu aeronave específica
+- 📖 Explicaciones claras y tranquilizadoras sobre cada condición
 
 ## 🛫 Aeropuertos Disponibles
 
