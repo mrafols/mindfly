@@ -124,47 +124,67 @@ function processGFSData(
   
   // ALGORITMO DE TURBULENCIA (similar a GTG)
   
-  // 1. Calcular shear de viento (diferencia entre capas)
-  const windShear = Math.abs(windSpeed - windGusts);
+  // Convertir velocidad de viento de km/h a knots (si es necesario)
+  // Open-Meteo devuelve km/h por defecto
+  const windSpeedKnots = windSpeed * 0.539957; // Conversión de km/h a knots
   
-  // 2. Calcular EDR (Eddy Dissipation Rate)
-  // EDR es la métrica estándar de turbulencia en aviación
-  let edr = 0;
+  // 1. Calcular factores de turbulencia
+  // En altitud de crucero, vientos muy fuertes pueden indicar jet stream y turbulencia
+  let turbulenceScore = 0;
   
-  if (windShear < 10 && windSpeed < 50) {
-    edr = 0.05; // Suave
-  } else if (windShear < 20 && windSpeed < 80) {
-    edr = 0.15; // Ligera
-  } else if (windShear < 35 && windSpeed < 120) {
-    edr = 0.30; // Moderada
-  } else {
-    edr = 0.50; // Severa
+  // Factor 1: Velocidad absoluta del viento en altitud
+  if (windSpeedKnots > 80) {
+    turbulenceScore += 3; // Jet stream potencial
+  } else if (windSpeedKnots > 50) {
+    turbulenceScore += 2;
+  } else if (windSpeedKnots > 30) {
+    turbulenceScore += 1;
   }
   
-  // 4. Determinar índice de turbulencia (0-4)
+  // Factor 2: Temperatura (aire muy frío en altitud puede indicar masas de aire inestables)
+  if (temperature < -60) {
+    turbulenceScore += 1;
+  }
+  
+  // Factor 3: Variabilidad del viento (usando ráfagas en superficie como proxy)
+  const windVariability = Math.abs(windGusts - windSpeed * 0.1); // Comparación ajustada
+  if (windVariability > 20) {
+    turbulenceScore += 2;
+  } else if (windVariability > 10) {
+    turbulenceScore += 1;
+  }
+  
+  // 2. Calcular EDR (Eddy Dissipation Rate) basado en score
+  // EDR es la métrica estándar de turbulencia en aviación
+  let edr = 0;
   let turbulenceIndex = 0;
   let probability = 0;
   
-  if (edr < 0.10) {
-    turbulenceIndex = 0; // None
+  if (turbulenceScore === 0) {
+    edr = 0.05; // Muy suave
+    turbulenceIndex = 0;
     probability = 5;
-  } else if (edr < 0.20) {
-    turbulenceIndex = 1; // Light
-    probability = 25;
-  } else if (edr < 0.35) {
-    turbulenceIndex = 2; // Moderate
-    probability = 60;
-  } else if (edr < 0.50) {
-    turbulenceIndex = 3; // Severe
-    probability = 80;
+  } else if (turbulenceScore <= 2) {
+    edr = 0.12; // Ligera
+    turbulenceIndex = 1;
+    probability = 20;
+  } else if (turbulenceScore <= 4) {
+    edr = 0.25; // Moderada
+    turbulenceIndex = 2;
+    probability = 45;
+  } else if (turbulenceScore <= 6) {
+    edr = 0.40; // Severa
+    turbulenceIndex = 3;
+    probability = 70;
   } else {
-    turbulenceIndex = 4; // Extreme
-    probability = 95;
+    edr = 0.55; // Extrema
+    turbulenceIndex = 4;
+    probability = 90;
   }
   
-  // 5. Detectar condiciones especiales
-  const jetStream = windSpeed > 100; // >100 knots sugiere jet stream
-  const convection = windGusts > windSpeed * 1.5; // Ráfagas fuertes = convección
+  // 3. Detectar condiciones especiales
+  const jetStream = windSpeedKnots > 80; // >80 knots sugiere jet stream
+  const convection = windVariability > 15; // Alta variabilidad = convección
   const mountainWave = false; // Requeriría datos topográficos
   
   return {
