@@ -31,6 +31,18 @@ export interface FlightForecast {
   weatherAlerts: string[];
   recommendation: string;
   turbulencePoints?: import('./noaa-weather').TurbulenceForecastPoint[]; // Datos detallados para gráficos
+  
+  // NUEVO: Datos estilo Turbli
+  gfsData?: import('./gfs-turbulence').GFSTurbulenceData[];
+  routeSegments?: import('./gfs-turbulence').TurbulenceSegment[];
+  turbulenceSummary?: {
+    overallRating: string;
+    maxSeverity: 'none' | 'light' | 'moderate' | 'severe';
+    smoothPercentage: number;
+    turbulentPercentage: number;
+    recommendation: string;
+    emoji: string;
+  };
 }
 
 // Función para buscar vuelos entre dos aeropuertos
@@ -98,8 +110,8 @@ export async function getTurbulenceForecast(
     // Fallback rápido: usar método simplificado
     try {
       const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon, 5);
-      const weatherData = await getUpperAirWeather(waypoints);
-      return analyzeTurbulence(weatherData);
+    const weatherData = await getUpperAirWeather(waypoints);
+    return analyzeTurbulence(weatherData);
     } catch (fallbackError) {
       console.error('Error en fallback:', fallbackError);
       
@@ -254,8 +266,8 @@ export async function getFlightForecast(
   // Calcular waypoints una sola vez
   const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon, 15);
   
-  // OPTIMIZACIÓN: Ejecutar llamadas en paralelo
-  const [baseTurbulence, turbulencePointsResult] = await Promise.allSettled([
+  // OPTIMIZACIÓN: Ejecutar llamadas en paralelo (incluyendo GFS)
+  const [baseTurbulence, turbulencePointsResult, gfsDataResult] = await Promise.allSettled([
     // Llamada 1: Pronóstico base
     getTurbulenceForecast(flight, originLat, originLon, destLat, destLon),
     
@@ -266,6 +278,17 @@ export async function getFlightForecast(
         return await getNOAATurbulenceData(waypoints, 350);
       } catch (error) {
         console.error('Error obteniendo datos detallados:', error);
+        return undefined;
+      }
+    })(),
+    
+    // Llamada 3: NUEVO - Datos GFS estilo Turbli (en paralelo)
+    (async () => {
+      try {
+        const { getGFSTurbulenceData } = await import('./gfs-turbulence');
+        return await getGFSTurbulenceData(waypoints, 350);
+      } catch (error) {
+        console.error('Error obteniendo datos GFS:', error);
         return undefined;
       }
     })()
@@ -286,6 +309,11 @@ export async function getFlightForecast(
     ? turbulencePointsResult.value 
     : undefined;
   
+  // Extraer datos GFS
+  const gfsData = gfsDataResult.status === 'fulfilled' 
+    ? gfsDataResult.value 
+    : undefined;
+  
   // Ajustar según tipo de aeronave (OPCIONAL - no bloquea si falla)
   let turbulence: TurbulenceData = {
     severity: baseResult.severity,
@@ -295,22 +323,22 @@ export async function getFlightForecast(
   };
   
   try {
-    const { adjustTurbulenceByAircraft } = await import('./aircraft-data');
-    const adjusted = adjustTurbulenceByAircraft(
+  const { adjustTurbulenceByAircraft } = await import('./aircraft-data');
+  const adjusted = adjustTurbulenceByAircraft(
       baseResult.severity,
       baseResult.probability,
-      flight.aircraft
-    );
-    
+    flight.aircraft
+  );
+  
     // Solo aplicar ajuste si hay datos de aeronave
     if (adjusted.adjustedSeverity !== baseResult.severity || 
         adjusted.adjustedProbability !== baseResult.probability) {
       turbulence = {
-        severity: adjusted.adjustedSeverity,
+    severity: adjusted.adjustedSeverity,
         altitude: baseResult.altitude,
-        probability: adjusted.adjustedProbability,
+    probability: adjusted.adjustedProbability,
         description: `${baseResult.description}\n\n${adjusted.explanation}`
-      };
+  };
     }
   } catch (error) {
     console.log('ℹ️ Información de aeronave no disponible, usando pronóstico base');
@@ -330,13 +358,33 @@ export async function getFlightForecast(
     recommendation = '⚠️ Condiciones más movidas de lo normal, pero totalmente seguro volar.';
     weatherAlerts.push('Condiciones de viento intensas en ruta');
   }
+  
+  // Procesar datos GFS para obtener segmentos y resumen estilo Turbli
+  let routeSegments;
+  let turbulenceSummary;
+  
+  if (gfsData && gfsData.length > 0) {
+    try {
+      const { analyzeRouteSegments, generateTurbulenceSummary } = await import('./gfs-turbulence');
+      routeSegments = analyzeRouteSegments(gfsData);
+      turbulenceSummary = generateTurbulenceSummary(routeSegments);
+      
+      console.log(`✅ Análisis GFS completo: ${routeSegments.length} segmentos`);
+  } catch (error) {
+      console.error('Error procesando datos GFS:', error);
+    }
+  }
 
   return {
     flight,
     turbulence,
     weatherAlerts,
     recommendation,
-    turbulencePoints
+    turbulencePoints,
+    // NUEVO: Datos estilo Turbli
+    gfsData,
+    routeSegments,
+    turbulenceSummary
   };
 }
 

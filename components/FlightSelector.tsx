@@ -7,6 +7,8 @@ import TurbulenceIndicator from './TurbulenceIndicator';
 import AircraftInfo from './AircraftInfo';
 import TurbulenceChart from './TurbulenceChart';
 import RouteProgressBar from './RouteProgressBar';
+import TurbulenceSummaryCard from './TurbulenceSummaryCard';
+import TurbulenceRouteMap from './TurbulenceRouteMap';
 
 interface FlightSelectorProps {
   flights: Flight[];
@@ -233,6 +235,36 @@ export default function FlightSelector({
 
       {forecast && !loading && (
         <div className="space-y-6 animate-fadeInUp">
+          {/* NUEVO: Resumen estilo Turbli */}
+          {forecast.turbulenceSummary && (
+            <TurbulenceSummaryCard
+              overallRating={forecast.turbulenceSummary.overallRating}
+              emoji={forecast.turbulenceSummary.emoji}
+              smoothPercentage={forecast.turbulenceSummary.smoothPercentage}
+              turbulentPercentage={forecast.turbulenceSummary.turbulentPercentage}
+              recommendation={forecast.turbulenceSummary.recommendation}
+              maxSeverity={forecast.turbulenceSummary.maxSeverity}
+            />
+          )}
+
+          {/* NUEVO: Mapa de ruta con segmentos estilo Turbli */}
+          {forecast.routeSegments && forecast.routeSegments.length > 0 && (
+            <TurbulenceRouteMap
+              segments={forecast.routeSegments}
+              originCity={originCity}
+              destCity={destCity}
+              labels={{
+                title: 'Mapa de Turbulencias por Tramo',
+                origin: 'Origen',
+                destination: 'Destino',
+                smooth: 'Suave',
+                light: 'Ligera',
+                moderate: 'Moderada',
+                severe: 'Severa'
+              }}
+            />
+          )}
+
           {/* Información de la aeronave */}
           <AircraftInfo
             aircraftCode={forecast.flight.aircraft}
