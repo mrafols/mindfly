@@ -231,7 +231,7 @@ export async function getAirportFlights(
 export async function getFlightByNumber(
   flightNumber: string,
   date?: Date
-): Promise<Flight | null> {
+): Promise<(Flight & { originIATA?: string; destinationIATA?: string }) | null> {
   const apiKey = process.env.AERODATABOX_API_KEY;
   
   if (!apiKey) {
@@ -266,7 +266,18 @@ export async function getFlightByNumber(
       return null;
     }
 
-    return parseAeroDataBoxFlight(data[0]);
+    const flightData = parseAeroDataBoxFlight(data[0]);
+    
+    // Añadir códigos IATA de origen y destino
+    if (flightData && data[0].departure?.airport?.iata && data[0].arrival?.airport?.iata) {
+      return {
+        ...flightData,
+        originIATA: data[0].departure.airport.iata,
+        destinationIATA: data[0].arrival.airport.iata
+      };
+    }
+    
+    return flightData;
   } catch (error) {
     console.error('Error obteniendo vuelo por número:', error);
     return null;

@@ -24,58 +24,107 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
 
   let originAirport, destAirport;
   let flights: Awaited<ReturnType<typeof searchFlights>> = [];
+  let flightFound = false;
 
-  // Buscar el vuelo específico usando FlightRadar24 API
-  const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
-  
-  try {
-    const flightData = await getFlightByNumber(flightNumber);
+  // NIVEL 1: Buscar en AeroDataBox API (datos reales)
+  console.log(`🔍 Buscando vuelo ${flightNumber} en AeroDataBox API...`);
+    const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
     
-    if (flightData) {
-      flights = [flightData];
-      // TODO: Extraer origen y destino del vuelo si la API lo proporciona
+    try {
+      const flightData = await getFlightByNumber(flightNumber);
+      
+      if (flightData) {
+      console.log('✅ Vuelo encontrado en AeroDataBox API');
+        flights = [flightData];
+      
+      // Extraer origen y destino si la API los proporciona
+      if ('originIATA' in flightData && 'destinationIATA' in flightData && 
+          flightData.originIATA && flightData.destinationIATA) {
+        originAirport = findAirport(flightData.originIATA);
+        destAirport = findAirport(flightData.destinationIATA);
+        
+        if (originAirport && destAirport) {
+          console.log(`✅ Ruta identificada: ${flightData.originIATA} → ${flightData.destinationIATA}`);
+          flightFound = true;
+        }
+      }
     }
   } catch (error) {
-    console.error('Error buscando vuelo por número:', error);
+    console.log('⚠️ Error con AeroDataBox API:', error);
   }
 
-  // Si no encontramos el vuelo, buscar en rutas conocidas comunes
-  if (!flights || flights.length === 0) {
-    // Intentar buscar en rutas principales españolas
-    const commonRoutes = [
-      { origin: 'BCN', destination: 'MAD' },
-      { origin: 'MAD', destination: 'BCN' },
+  // NIVEL 2: Buscar en base de datos local de rutas comunes
+  if (!flightFound) {
+    console.log(`🔍 Buscando vuelo ${flightNumber} en base de datos local...`);
+    
+    // Lista completa de rutas para buscar
+    const allRoutes = [
+      // Barcelona - Menorca (ruta muy común de Vueling)
+      { origin: 'BCN', destination: 'MAH' },
+      { origin: 'MAH', destination: 'BCN' },
+      // Palma - Menorca
+      { origin: 'PMI', destination: 'MAH' },
+      { origin: 'MAH', destination: 'PMI' },
+      // Barcelona - Mallorca
       { origin: 'BCN', destination: 'PMI' },
       { origin: 'PMI', destination: 'BCN' },
+      // Barcelona - Madrid
+      { origin: 'BCN', destination: 'MAD' },
+      { origin: 'MAD', destination: 'BCN' },
+      // Madrid - Málaga
       { origin: 'MAD', destination: 'AGP' },
       { origin: 'AGP', destination: 'MAD' },
+      // Barcelona - Málaga
       { origin: 'BCN', destination: 'AGP' },
+      { origin: 'AGP', destination: 'BCN' },
+      // Madrid - Sevilla
       { origin: 'MAD', destination: 'SVQ' },
+      { origin: 'SVQ', destination: 'MAD' },
+      // Barcelona - Sevilla
       { origin: 'BCN', destination: 'SVQ' },
+      { origin: 'SVQ', destination: 'BCN' },
+      // Madrid - Valencia
       { origin: 'MAD', destination: 'VLC' },
+      { origin: 'VLC', destination: 'MAD' },
+      // Barcelona - Valencia
+      { origin: 'BCN', destination: 'VLC' },
+      { origin: 'VLC', destination: 'BCN' },
+      // Internacionales
+      { origin: 'BCN', destination: 'LHR' },
+      { origin: 'MAD', destination: 'LHR' },
+      { origin: 'BCN', destination: 'CDG' },
+      { origin: 'MAD', destination: 'CDG' },
+      { origin: 'BCN', destination: 'DUB' },
+      { origin: 'MAD', destination: 'DUB' },
+      { origin: 'AGP', destination: 'STN' },
+      { origin: 'BCN', destination: 'STN' },
     ];
 
-    for (const route of commonRoutes) {
+    for (const route of allRoutes) {
       const routeFlights = await searchFlights(route.origin, route.destination);
       const matchingFlight = routeFlights.find(
         f => f.flightNumber.toUpperCase() === flightNumber.toUpperCase()
       );
       
       if (matchingFlight) {
+        console.log(`✅ Vuelo encontrado en base de datos: ${route.origin} → ${route.destination}`);
         flights = [matchingFlight];
         originAirport = findAirport(route.origin);
         destAirport = findAirport(route.destination);
+        flightFound = true;
         break;
       }
     }
   }
 
-  // Si aún no encontramos el vuelo, crear uno simulado con ruta BCN-MAD
-  if ((!flights || flights.length === 0) || !originAirport || !destAirport) {
+  // NIVEL 3: Crear vuelo simulado como último recurso
+  if (!flightFound || !originAirport || !destAirport) {
+    console.log(`⚠️ Vuelo ${flightNumber} no encontrado, creando simulado...`);
+    
     // Usar ruta Barcelona-Madrid como predeterminada
     originAirport = findAirport('BCN');
     destAirport = findAirport('MAD');
-    
+
     if (!originAirport || !destAirport) {
       notFound();
     }
@@ -99,6 +148,8 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
       aircraft: 'A320',
       status: 'scheduled' as const
     }];
+    
+    console.log(`ℹ️ Vuelo simulado creado: BCN → MAD`);
   }
 
   // Validar que tenemos lo mínimo necesario
