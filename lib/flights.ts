@@ -45,8 +45,20 @@ export interface FlightForecast {
     emoji: string;
   };
   
-  // NUEVO: Datos de Met Office (UK)
-  metOfficeData?: import('./metoffice-api').MetOfficeRouteAnalysis & { available: boolean };
+  // NUEVO: Datos de National Weather Service (USA)
+  nwsData?: {
+    origin: Awaited<ReturnType<typeof import('./nws-api').analyzeWeatherAtLocation>>;
+    destination: Awaited<ReturnType<typeof import('./nws-api').analyzeWeatherAtLocation>>;
+    summary: {
+      maxTemperature: number;
+      minTemperature: number;
+      maxWindSpeed: number;
+      precipitationProbability: number;
+      alertCount: number;
+      worstAlert: import('./nws-api').NWSAlert | null;
+    };
+    coverage: boolean;
+  };
 }
 
 // Función para buscar vuelos entre dos aeropuertos
@@ -270,8 +282,8 @@ export async function getFlightForecast(
   // Calcular waypoints una sola vez
   const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon, 15);
   
-  // OPTIMIZACIÓN: Ejecutar llamadas en paralelo (incluyendo GFS y Met Office)
-  const [baseTurbulence, turbulencePointsResult, gfsDataResult, metOfficeResult] = await Promise.allSettled([
+  // OPTIMIZACIÓN: Ejecutar llamadas en paralelo (incluyendo GFS y NWS)
+  const [baseTurbulence, turbulencePointsResult, gfsDataResult, nwsResult] = await Promise.allSettled([
     // Llamada 1: Pronóstico base
     getTurbulenceForecast(flight, originLat, originLon, destLat, destLon),
     
@@ -297,13 +309,13 @@ export async function getFlightForecast(
       }
     })(),
     
-    // Llamada 4: NUEVO - Datos de Met Office (UK) en paralelo
+    // Llamada 4: NUEVO - Datos de National Weather Service (USA) en paralelo
     (async () => {
       try {
-        const { analyzeWeatherOnRoute } = await import('./metoffice-api');
-        return await analyzeWeatherOnRoute(originLat, originLon, destLat, destLon, 5);
+        const { analyzeWeatherOnRoute } = await import('./nws-api');
+        return await analyzeWeatherOnRoute(originLat, originLon, destLat, destLon, 3);
       } catch (error) {
-        console.error('Error obteniendo datos de Met Office:', error);
+        console.error('Error obteniendo datos de NWS:', error);
         return undefined;
       }
     })()
@@ -389,24 +401,27 @@ export async function getFlightForecast(
     }
   }
 
-  // Procesar datos de Met Office
-  const metOfficeAnalysis = metOfficeResult.status === 'fulfilled' 
-    ? metOfficeResult.value 
+  // Procesar datos de National Weather Service
+  const nwsAnalysis = nwsResult.status === 'fulfilled' 
+    ? nwsResult.value 
     : undefined;
   
-  let metOfficeData;
-  if (metOfficeAnalysis) {
-    metOfficeData = {
-      ...metOfficeAnalysis,
-      available: true
+  let nwsData;
+  if (nwsAnalysis && nwsAnalysis.coverage) {
+    nwsData = {
+      origin: nwsAnalysis.origin,
+      destination: nwsAnalysis.destination,
+      summary: nwsAnalysis.summary,
+      coverage: true
     };
-    console.log(`✅ Met Office: Datos meteorológicos UK disponibles`);
-    console.log(`   Precipitación máx: ${metOfficeAnalysis.summary.maxPrecipitationProb}%`);
-    console.log(`   Temperatura media: ${metOfficeAnalysis.summary.avgTemperature.toFixed(1)}°C`);
-    console.log(`   Viento máx: ${metOfficeAnalysis.summary.maxWindSpeed} mph`);
+    console.log(`✅ NWS: Datos meteorológicos USA disponibles`);
+    console.log(`   Temperatura: ${nwsAnalysis.summary.minTemperature.toFixed(1)}°C - ${nwsAnalysis.summary.maxTemperature.toFixed(1)}°C`);
+    console.log(`   Viento máx: ${nwsAnalysis.summary.maxWindSpeed.toFixed(0)} km/h`);
+    console.log(`   Precipitación: ${nwsAnalysis.summary.precipitationProbability}%`);
+    console.log(`   Alertas: ${nwsAnalysis.summary.alertCount}`);
   } else {
-    metOfficeData = undefined;
-    console.log('ℹ️ Met Office: No disponible (ruta fuera de UK o API no configurada)');
+    nwsData = undefined;
+    console.log('ℹ️ NWS: No disponible (ruta fuera de USA)');
   }
 
   return {
@@ -420,8 +435,8 @@ export async function getFlightForecast(
     pirepCount: realDataAnalysis?.pirepCount || 0,
     routeSegments,
     turbulenceSummary,
-    // NUEVO: Datos de Met Office
-    metOfficeData
+    // NUEVO: Datos de National Weather Service
+    nwsData
   };
 }
 

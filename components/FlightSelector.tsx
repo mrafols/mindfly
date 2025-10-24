@@ -9,7 +9,7 @@ import TurbulenceChart from './TurbulenceChart';
 import RouteProgressBar from './RouteProgressBar';
 import TurbulenceSummaryCard from './TurbulenceSummaryCard';
 import TurbulenceGraphMap from './TurbulenceGraphMap';
-import MetOfficeCard from './MetOfficeCard';
+import NWSWeatherCard from './NWSWeatherCard';
 
 interface FlightSelectorProps {
   flights: Flight[];
@@ -268,10 +268,10 @@ export default function FlightSelector({
             />
           )}
 
-          {/* NUEVO: Met Office UK Weather Data */}
-          {forecast.metOfficeData && (
-            <MetOfficeCard
-              metOfficeData={forecast.metOfficeData}
+          {/* NUEVO: National Weather Service USA Data */}
+          {forecast.nwsData && forecast.nwsData.coverage && (
+            <NWSWeatherCard
+              nwsData={forecast.nwsData}
               originCity={originCity}
               destCity={destCity}
             />
