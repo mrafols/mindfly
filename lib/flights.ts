@@ -33,7 +33,8 @@ export interface FlightForecast {
   turbulencePoints?: import('./noaa-weather').TurbulenceForecastPoint[]; // Datos detallados para gráficos
   
   // NUEVO: Datos estilo Turbli
-  gfsData?: import('./gfs-turbulence').GFSTurbulenceData[];
+  realDataUsed?: boolean;
+  pirepCount?: number;
   routeSegments?: import('./gfs-turbulence').TurbulenceSegment[];
   turbulenceSummary?: {
     overallRating: string;
@@ -282,13 +283,13 @@ export async function getFlightForecast(
       }
     })(),
     
-    // Llamada 3: NUEVO - Datos GFS estilo Turbli (en paralelo)
+    // Llamada 3: NUEVO - Datos reales (PIREPs + GFS) estilo Turbli (en paralelo)
     (async () => {
       try {
-        const { getGFSTurbulenceData } = await import('./gfs-turbulence');
-        return await getGFSTurbulenceData(waypoints, 350);
+        const { analyzeRouteWithRealData } = await import('./gfs-turbulence');
+        return await analyzeRouteWithRealData(originLat, originLon, destLat, destLon, 350, 15);
       } catch (error) {
-        console.error('Error obteniendo datos GFS:', error);
+        console.error('Error obteniendo datos con PIREPs reales:', error);
         return undefined;
       }
     })()
@@ -309,8 +310,8 @@ export async function getFlightForecast(
     ? turbulencePointsResult.value 
     : undefined;
   
-  // Extraer datos GFS
-  const gfsData = gfsDataResult.status === 'fulfilled' 
+  // Extraer datos de análisis con PIREPs reales
+  const realDataAnalysis = gfsDataResult.status === 'fulfilled' 
     ? gfsDataResult.value 
     : undefined;
   
@@ -359,19 +360,18 @@ export async function getFlightForecast(
     weatherAlerts.push('Condiciones de viento intensas en ruta');
   }
   
-  // Procesar datos GFS para obtener segmentos y resumen estilo Turbli
+  // Usar segmentos del análisis con datos reales (PIREPs + GFS)
   let routeSegments;
   let turbulenceSummary;
   
-  if (gfsData && gfsData.length > 0) {
-    try {
-      const { analyzeRouteSegments, generateTurbulenceSummary } = await import('./gfs-turbulence');
-      routeSegments = analyzeRouteSegments(gfsData);
-      turbulenceSummary = generateTurbulenceSummary(routeSegments);
-      
-      console.log(`✅ Análisis GFS completo: ${routeSegments.length} segmentos`);
-  } catch (error) {
-      console.error('Error procesando datos GFS:', error);
+  if (realDataAnalysis) {
+    routeSegments = realDataAnalysis.segments;
+    turbulenceSummary = realDataAnalysis.summary;
+    
+    if (realDataAnalysis.realDataUsed) {
+      console.log(`✅ Análisis con PIREPs reales: ${realDataAnalysis.pirepCount} reportes de pilotos, ${routeSegments.length} segmentos`);
+    } else {
+      console.log(`✅ Análisis con pronóstico GFS: ${routeSegments.length} segmentos`);
     }
   }
 
@@ -382,7 +382,8 @@ export async function getFlightForecast(
     recommendation,
     turbulencePoints,
     // NUEVO: Datos estilo Turbli
-    gfsData,
+    realDataUsed: realDataAnalysis?.realDataUsed || false,
+    pirepCount: realDataAnalysis?.pirepCount || 0,
     routeSegments,
     turbulenceSummary
   };
