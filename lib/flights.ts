@@ -44,6 +44,9 @@ export interface FlightForecast {
     recommendation: string;
     emoji: string;
   };
+  
+  // NUEVO: Datos de Met Office (UK)
+  metOfficeData?: import('./metoffice-api').MetOfficeRouteAnalysis & { available: boolean };
 }
 
 // Función para buscar vuelos entre dos aeropuertos
@@ -267,8 +270,8 @@ export async function getFlightForecast(
   // Calcular waypoints una sola vez
   const waypoints = calculateFlightPath(originLat, originLon, destLat, destLon, 15);
   
-  // OPTIMIZACIÓN: Ejecutar llamadas en paralelo (incluyendo GFS)
-  const [baseTurbulence, turbulencePointsResult, gfsDataResult] = await Promise.allSettled([
+  // OPTIMIZACIÓN: Ejecutar llamadas en paralelo (incluyendo GFS y Met Office)
+  const [baseTurbulence, turbulencePointsResult, gfsDataResult, metOfficeResult] = await Promise.allSettled([
     // Llamada 1: Pronóstico base
     getTurbulenceForecast(flight, originLat, originLon, destLat, destLon),
     
@@ -290,6 +293,17 @@ export async function getFlightForecast(
         return await analyzeRouteWithRealData(originLat, originLon, destLat, destLon, 350, 15);
       } catch (error) {
         console.error('Error obteniendo datos con PIREPs reales:', error);
+        return undefined;
+      }
+    })(),
+    
+    // Llamada 4: NUEVO - Datos de Met Office (UK) en paralelo
+    (async () => {
+      try {
+        const { analyzeWeatherOnRoute } = await import('./metoffice-api');
+        return await analyzeWeatherOnRoute(originLat, originLon, destLat, destLon, 5);
+      } catch (error) {
+        console.error('Error obteniendo datos de Met Office:', error);
         return undefined;
       }
     })()
@@ -375,6 +389,26 @@ export async function getFlightForecast(
     }
   }
 
+  // Procesar datos de Met Office
+  const metOfficeAnalysis = metOfficeResult.status === 'fulfilled' 
+    ? metOfficeResult.value 
+    : undefined;
+  
+  let metOfficeData;
+  if (metOfficeAnalysis) {
+    metOfficeData = {
+      ...metOfficeAnalysis,
+      available: true
+    };
+    console.log(`✅ Met Office: Datos meteorológicos UK disponibles`);
+    console.log(`   Precipitación máx: ${metOfficeAnalysis.summary.maxPrecipitationProb}%`);
+    console.log(`   Temperatura media: ${metOfficeAnalysis.summary.avgTemperature.toFixed(1)}°C`);
+    console.log(`   Viento máx: ${metOfficeAnalysis.summary.maxWindSpeed} mph`);
+  } else {
+    metOfficeData = undefined;
+    console.log('ℹ️ Met Office: No disponible (ruta fuera de UK o API no configurada)');
+  }
+
   return {
     flight,
     turbulence,
@@ -385,7 +419,9 @@ export async function getFlightForecast(
     realDataUsed: realDataAnalysis?.realDataUsed || false,
     pirepCount: realDataAnalysis?.pirepCount || 0,
     routeSegments,
-    turbulenceSummary
+    turbulenceSummary,
+    // NUEVO: Datos de Met Office
+    metOfficeData
   };
 }
 

@@ -9,6 +9,7 @@ import TurbulenceChart from './TurbulenceChart';
 import RouteProgressBar from './RouteProgressBar';
 import TurbulenceSummaryCard from './TurbulenceSummaryCard';
 import TurbulenceGraphMap from './TurbulenceGraphMap';
+import MetOfficeCard from './MetOfficeCard';
 
 interface FlightSelectorProps {
   flights: Flight[];
@@ -264,6 +265,15 @@ export default function FlightSelector({
                 distance: 'Distancia',
                 severity: 'Severidad'
               }}
+            />
+          )}
+
+          {/* NUEVO: Met Office UK Weather Data */}
+          {forecast.metOfficeData && (
+            <MetOfficeCard
+              metOfficeData={forecast.metOfficeData}
+              originCity={originCity}
+              destCity={destCity}
             />
           )}
 
