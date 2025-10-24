@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocale } from 'next-intl';
+import AirportAutocomplete from './AirportAutocomplete';
 
 interface FlightSearchFormProps {
   labels: {
@@ -17,10 +18,9 @@ interface FlightSearchFormProps {
     orText: string;
   };
   errorMessage: string;
-  airports: Array<{ iata: string; name: string; city: string }>;
 }
 
-export default function FlightSearchForm({ labels, errorMessage, airports }: FlightSearchFormProps) {
+export default function FlightSearchForm({ labels, errorMessage }: FlightSearchFormProps) {
   const [flightNumber, setFlightNumber] = useState('');
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
@@ -123,43 +123,21 @@ export default function FlightSearchForm({ labels, errorMessage, airports }: Fli
 
       {/* Búsqueda por Ruta - Opción 2 */}
       <div className="grid md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
-            🛫 {labels.origin}
-          </label>
-          <select
-            value={origin}
-            onChange={(e) => handleOriginChange(e.target.value)}
-            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-slate-900"
-            disabled={!!flightNumber}
-          >
-            <option value="">{labels.originPlaceholder}</option>
-            {airports.map((airport) => (
-              <option key={airport.iata} value={airport.iata}>
-                {airport.city} ({airport.iata})
-              </option>
-            ))}
-          </select>
-        </div>
+        <AirportAutocomplete
+          value={origin}
+          onChange={handleOriginChange}
+          placeholder={labels.originPlaceholder}
+          label={`🛫 ${labels.origin}`}
+          disabled={!!flightNumber}
+        />
 
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">
-            🛬 {labels.destination}
-          </label>
-          <select
-            value={destination}
-            onChange={(e) => handleDestinationChange(e.target.value)}
-            className="w-full px-4 py-3 bg-white border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-slate-900"
-            disabled={!!flightNumber}
-          >
-            <option value="">{labels.destinationPlaceholder}</option>
-            {airports.map((airport) => (
-              <option key={airport.iata} value={airport.iata}>
-                {airport.city} ({airport.iata})
-              </option>
-            ))}
-          </select>
-        </div>
+        <AirportAutocomplete
+          value={destination}
+          onChange={handleDestinationChange}
+          placeholder={labels.destinationPlaceholder}
+          label={`🛬 ${labels.destination}`}
+          disabled={!!flightNumber}
+        />
       </div>
 
       <button

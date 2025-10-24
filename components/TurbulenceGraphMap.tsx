@@ -202,44 +202,6 @@ export default function TurbulenceGraphMap({
         </div>
       </div>
 
-      {/* Detalles de segmentos */}
-      <div className="space-y-3">
-        <h4 className="text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">
-          Detalles por Tramo
-        </h4>
-        {segments.map((segment, index) => {
-          const percentage = (segment.distance / totalDistance) * 100;
-          const severityColor = getSeverityColor(segment.severity);
-          const severityLabel = getSeverityLabel(segment.severity, labels);
-          
-          return (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-4 border-l-4 shadow-sm hover:shadow-md transition-shadow"
-              style={{ borderLeftColor: severityColor }}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-slate-900">
-                  Tramo {index + 1} de {segments.length}
-                </span>
-                <span 
-                  className="text-xs font-semibold px-3 py-1 rounded-full text-white"
-                  style={{ backgroundColor: severityColor }}
-                >
-                  {severityLabel.toUpperCase()}
-                </span>
-              </div>
-              <div className="text-sm text-slate-600 space-y-1">
-                <p>📏 <strong>Distancia:</strong> {Math.round(segment.distance)} km ({Math.round(percentage)}% del vuelo)</p>
-                <p style={{ color: severityColor }}>
-                  {segment.description}
-                </p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
       {/* Leyenda */}
       <div className="mt-6 pt-6 border-t border-slate-200">
         <h4 className="text-xs font-bold text-slate-600 mb-3 uppercase tracking-wide">
