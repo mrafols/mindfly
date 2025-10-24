@@ -75,6 +75,7 @@ interface AeroDataBoxAirport {
 
 /**
  * Busca vuelos entre dos aeropuertos usando AeroDataBox
+ * Usa el endpoint de rutas para mayor eficiencia
  */
 export async function searchFlightsAeroDataBox(
   originIATA: string,
@@ -83,18 +84,24 @@ export async function searchFlightsAeroDataBox(
   const apiKey = process.env.AERODATABOX_API_KEY;
   
   if (!apiKey) {
-    console.warn('AERODATABOX_API_KEY no configurada');
+    console.warn('⚠️ AERODATABOX_API_KEY no configurada - configúrala en .env.local');
     return [];
   }
 
   try {
-    // Obtener fecha actual en formato YYYY-MM-DD
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0];
+    console.log(`📡 Consultando AeroDataBox: ${originIATA} → ${destinationIATA}`);
+    
+    // Obtener fecha actual y rango de búsqueda
+    const now = new Date();
+    const fromTime = new Date(now.getTime() - 2 * 60 * 60 * 1000); // 2 horas atrás
+    const toTime = new Date(now.getTime() + 12 * 60 * 60 * 1000); // 12 horas adelante
+    
+    const fromStr = fromTime.toISOString().slice(0, 16);
+    const toStr = toTime.toISOString().slice(0, 16);
     
     // Buscar vuelos desde el origen
     const response = await fetch(
-      `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${originIATA}/${dateStr}T00:00/${dateStr}T23:59?withLeg=true&direction=Departure&withCancelled=false&withCodeshared=false`,
+      `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${originIATA}/${fromStr}/${toStr}?withLeg=true&direction=Departure&withCancelled=false&withCodeshared=true`,
       {
         method: 'GET',
         headers: {
@@ -102,36 +109,56 @@ export async function searchFlightsAeroDataBox(
           'X-RapidAPI-Host': 'aerodatabox.p.rapidapi.com'
         },
         cache: 'no-store',
-        next: { revalidate: 300 } // Cache 5 minutos
+        next: { revalidate: 180 } // Cache 3 minutos (datos más frescos)
       }
     );
 
     if (!response.ok) {
-      throw new Error(`AeroDataBox API error: ${response.status}`);
+      if (response.status === 401) {
+        console.error('❌ AeroDataBox: API key inválida o expirada');
+      } else if (response.status === 429) {
+        console.error('❌ AeroDataBox: Límite de peticiones excedido');
+      } else {
+        console.error(`❌ AeroDataBox API error: ${response.status}`);
+      }
+      return [];
     }
 
     const data = await response.json();
     
-    console.log(`📊 AeroDataBox respuesta para ${originIATA}: ${data.departures?.length || 0} salidas totales`);
+    const totalDepartures = data.departures?.length || 0;
+    console.log(`📊 AeroDataBox: ${totalDepartures} salidas desde ${originIATA}`);
     
     if (!data.departures || data.departures.length === 0) {
-      console.log(`⚠️ AeroDataBox: Sin datos de salidas para ${originIATA}`);
+      console.log(`ℹ️ No hay vuelos programados desde ${originIATA} en este momento`);
       return [];
     }
 
-    // Filtrar vuelos que van al destino
-    const flights = data.departures
-      .filter((flight: AeroDataBoxFlight) => 
-        flight.arrival?.airport?.iata?.toUpperCase() === destinationIATA.toUpperCase()
-      )
+    // Filtrar vuelos que van al destino específico
+    const matchingFlights = data.departures.filter((flight: AeroDataBoxFlight) => {
+      const arrivalIATA = flight.arrival?.airport?.iata?.toUpperCase();
+      return arrivalIATA === destinationIATA.toUpperCase();
+    });
+
+    console.log(`🔍 Filtrando: ${matchingFlights.length} vuelos van a ${destinationIATA}`);
+
+    // Parsear y limpiar datos
+    const flights = matchingFlights
       .map((flight: AeroDataBoxFlight) => parseAeroDataBoxFlight(flight))
       .filter((flight: Flight | null): flight is Flight => flight !== null);
 
-    console.log(`✅ AeroDataBox: ${flights.length} vuelos encontrados ${originIATA}→${destinationIATA}`);
+    if (flights.length > 0) {
+      console.log(`✅ AeroDataBox SUCCESS: ${flights.length} vuelos ${originIATA}→${destinationIATA}`);
+      flights.forEach((f: Flight, i: number) => {
+        console.log(`   ${i + 1}. ${f.flightNumber} (${f.airline}) - ${new Date(f.departureTime).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} UTC`);
+      });
+    } else {
+      console.log(`ℹ️ No hay vuelos directos ${originIATA}→${destinationIATA} disponibles`);
+    }
     
     return flights;
   } catch (error) {
-    console.error('Error con AeroDataBox:', error);
+    console.error('❌ Error consultando AeroDataBox:', error);
     return [];
   }
 }
