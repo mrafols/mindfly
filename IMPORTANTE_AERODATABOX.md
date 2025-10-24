@@ -17,21 +17,26 @@ Por ejemplo, para BCN→MAH (Barcelona-Menorca):
 
 AeroDataBox te dará **TODOS los vuelos reales** de **TODAS las aerolíneas** automáticamente.
 
-### Pasos Rápidos (5 minutos):
+### Estado de Configuración:
 
-1. **Registrarse en RapidAPI** (gratis)
-   - https://rapidapi.com/auth/sign-up
+- ✅ **Desarrollo Local**: API Key configurada en `.env.local`
+- ⏳ **Producción (Vercel)**: Pendiente de configurar
 
-2. **Suscribirse a AeroDataBox** (plan gratis)
-   - https://api.market/store/aedbx/aerodatabox
-   - Click "Subscribe to Test"
-   - Seleccionar plan **Basic (FREE)** - 500 requests/mes
+### Pasos para Completar la Configuración:
 
-3. **Copiar tu API Key**
-   - La verás en RapidAPI como "X-RapidAPI-Key"
-   - Es algo como: `abc123def456...`
+#### 1. ✅ Desarrollo Local (COMPLETADO)
 
-4. **Configurar en Vercel**
+La API key ya está configurada en `.env.local`:
+```
+AERODATABOX_API_KEY=867ea2c403msh9507d185e074c8p15f6jsnad2986aeb34
+```
+
+Puedes probar la app localmente con:
+```bash
+npm run dev
+```
+
+#### 2. ⏳ Configurar en Vercel (PENDIENTE)
    
    **Opción A - Dashboard (más fácil):**
    - Ve a: https://vercel.com/mrafols-projects/mindfly/settings/environment-variables

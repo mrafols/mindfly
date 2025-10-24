@@ -30,6 +30,13 @@ MindFly es una aplicación web diseñada para tranquilizar a las personas que si
 # Instalar dependencias
 npm install
 
+# Configurar variables de entorno (ver sección de Configuración)
+cp .env.example .env.local
+# Edita .env.local con tus API keys
+
+# Verificar configuración (opcional)
+node check-env.js
+
 # Ejecutar en modo desarrollo
 npm run dev
 
@@ -105,7 +112,50 @@ La aplicación incluye información de más de 30 aeropuertos principales:
 
 ## 🔧 Configuración
 
-La aplicación no requiere claves de API ya que utiliza Open-Meteo, un servicio gratuito de datos meteorológicos.
+### Variables de Entorno
+
+La aplicación utiliza las siguientes APIs:
+
+#### 1. Open-Meteo (Datos Meteorológicos)
+- ✅ **No requiere API key** - Servicio gratuito
+- Usado para pronósticos de turbulencias y condiciones meteorológicas
+
+#### 2. AeroDataBox (Datos de Vuelos) - ⚠️ Requiere Configuración
+- 📡 **API key necesaria** para datos de vuelos en tiempo real
+- 🆓 **Plan gratuito disponible**: 500 requests/mes
+
+##### Configuración de AeroDataBox:
+
+**Paso 1**: Obtener API Key
+1. Registrarse en [RapidAPI](https://rapidapi.com/auth/sign-up)
+2. Suscribirse a [AeroDataBox](https://api.market/store/aedbx/aerodatabox)
+3. Seleccionar plan "Basic (FREE)"
+4. Copiar tu API key
+
+**Paso 2**: Configurar Localmente
+```bash
+# Copiar el archivo de ejemplo
+cp .env.example .env.local
+
+# Editar .env.local y añadir tu API key
+AERODATABOX_API_KEY=tu_api_key_aqui
+
+# Verificar configuración
+node check-env.js
+```
+
+**Paso 3**: Configurar en Vercel (Producción)
+1. Ve a tu proyecto en Vercel
+2. Settings → Environment Variables
+3. Añade: `AERODATABOX_API_KEY` con tu API key
+4. Redeploy el proyecto
+
+> 📖 **Documentación completa**: Ver [IMPORTANTE_AERODATABOX.md](IMPORTANTE_AERODATABOX.md) para más detalles
+
+### ¿Qué pasa sin AeroDataBox?
+- ⚠️ Se usarán datos de vuelos simulados (base de datos local limitada)
+- ✅ La app funcionará, pero con información limitada de vuelos
+- ✅ El pronóstico de turbulencias seguirá funcionando completamente
 
 ## 🤝 Contribuir
 
