@@ -1,8 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 import FlightSearchForm from '@/components/FlightSearchForm';
+import { getAllAirports } from '@/lib/airports';
 
 export default async function HomePage() {
   const t = await getTranslations('home');
+  const airports = getAllAirports();
 
   return (
     <div className="min-h-screen">
@@ -29,9 +31,15 @@ export default async function HomePage() {
               flightNumber: t('flightNumber'),
               flightNumberPlaceholder: t('flightNumberPlaceholder'),
               flightNumberHelper: t('flightNumberHelper'),
+              origin: t('origin'),
+              originPlaceholder: t('originPlaceholder'),
+              destination: t('destination'),
+              destinationPlaceholder: t('destinationPlaceholder'),
               searchButton: t('searchButton'),
+              orText: t('orText'),
             }}
             errorMessage={t.raw('errors.fillFields')}
+            airports={airports}
           />
         </div>
       </div>

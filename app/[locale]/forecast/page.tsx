@@ -10,15 +10,16 @@ import FlightSelector from '@/components/FlightSelector';
 
 interface ForecastPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ flight?: string }>;
+  searchParams: Promise<{ flight?: string; origin?: string; destination?: string }>;
 }
 
 export default async function ForecastPage({ params, searchParams }: ForecastPageProps) {
   const { locale } = await params;
-  const { flight: flightNumber } = await searchParams;
+  const { flight: flightNumber, origin: originIATA, destination: destIATA } = await searchParams;
   const t = await getTranslations('forecast');
 
-  if (!flightNumber) {
+  // Validar que tengamos número de vuelo O ambos aeropuertos
+  if (!flightNumber && !(originIATA && destIATA)) {
     notFound();
   }
 
@@ -26,35 +27,54 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
   let flights: Awaited<ReturnType<typeof searchFlights>> = [];
   let flightFound = false;
 
-  // NIVEL 1: Buscar en AeroDataBox API (datos reales)
-  console.log(`🔍 Buscando vuelo ${flightNumber} en AeroDataBox API...`);
+  // CASO 1: Búsqueda directa por ruta (origin + destination)
+  if (originIATA && destIATA) {
+    console.log(`🔍 Búsqueda por ruta: ${originIATA} → ${destIATA}`);
+    
+    originAirport = findAirport(originIATA);
+    destAirport = findAirport(destIATA);
+
+    if (!originAirport || !destAirport) {
+      notFound();
+    }
+
+    // Buscar vuelos en la ruta
+    flights = await searchFlights(originIATA, destIATA);
+    console.log(`✅ Encontrados ${flights.length} vuelos para ${originIATA} → ${destIATA}`);
+    flightFound = true;
+  }
+  // CASO 2: Búsqueda por número de vuelo
+  else if (flightNumber) {
+    // NIVEL 1: Buscar en AeroDataBox API (datos reales)
+    console.log(`🔍 Buscando vuelo ${flightNumber} en AeroDataBox API...`);
     const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
     
     try {
       const flightData = await getFlightByNumber(flightNumber);
       
       if (flightData) {
-      console.log('✅ Vuelo encontrado en AeroDataBox API');
+        console.log('✅ Vuelo encontrado en AeroDataBox API');
         flights = [flightData];
       
-      // Extraer origen y destino si la API los proporciona
-      if ('originIATA' in flightData && 'destinationIATA' in flightData && 
-          flightData.originIATA && flightData.destinationIATA) {
-        originAirport = findAirport(flightData.originIATA);
-        destAirport = findAirport(flightData.destinationIATA);
-        
-        if (originAirport && destAirport) {
-          console.log(`✅ Ruta identificada: ${flightData.originIATA} → ${flightData.destinationIATA}`);
-          flightFound = true;
+        // Extraer origen y destino si la API los proporciona
+        if ('originIATA' in flightData && 'destinationIATA' in flightData && 
+            flightData.originIATA && flightData.destinationIATA) {
+          originAirport = findAirport(flightData.originIATA);
+          destAirport = findAirport(flightData.destinationIATA);
+          
+          if (originAirport && destAirport) {
+            console.log(`✅ Ruta identificada: ${flightData.originIATA} → ${flightData.destinationIATA}`);
+            flightFound = true;
+          }
         }
       }
+    } catch (error) {
+      console.log('⚠️ Error con AeroDataBox API:', error);
     }
-  } catch (error) {
-    console.log('⚠️ Error con AeroDataBox API:', error);
   }
 
-  // NIVEL 2: Buscar en base de datos local de rutas comunes
-  if (!flightFound) {
+  // NIVEL 2: Buscar en base de datos local de rutas comunes (solo si buscamos por número de vuelo)
+  if (!flightFound && flightNumber) {
     console.log(`🔍 Buscando vuelo ${flightNumber} en base de datos local...`);
     
     // Lista completa de rutas para buscar
@@ -117,8 +137,8 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
     }
   }
 
-  // NIVEL 3: Crear vuelo simulado como último recurso
-  if (!flightFound || !originAirport || !destAirport) {
+  // NIVEL 3: Crear vuelo simulado como último recurso (solo para búsqueda por número de vuelo)
+  if (!flightFound && flightNumber && (!originAirport || !destAirport)) {
     console.log(`⚠️ Vuelo ${flightNumber} no encontrado, creando simulado...`);
     
     // Usar ruta Barcelona-Madrid como predeterminada
