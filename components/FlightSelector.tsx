@@ -8,7 +8,7 @@ import AircraftInfo from './AircraftInfo';
 import TurbulenceChart from './TurbulenceChart';
 import RouteProgressBar from './RouteProgressBar';
 import TurbulenceSummaryCard from './TurbulenceSummaryCard';
-import TurbulenceRouteMap from './TurbulenceRouteMap';
+import TurbulenceGraphMap from './TurbulenceGraphMap';
 
 interface FlightSelectorProps {
   flights: Flight[];
@@ -247,20 +247,22 @@ export default function FlightSelector({
             />
           )}
 
-          {/* NUEVO: Mapa de ruta con segmentos estilo Turbli */}
+          {/* NUEVO: Gráfico de turbulencias por tramo */}
           {forecast.routeSegments && forecast.routeSegments.length > 0 && (
-            <TurbulenceRouteMap
+            <TurbulenceGraphMap
               segments={forecast.routeSegments}
               originCity={originCity}
               destCity={destCity}
               labels={{
-                title: 'Mapa de Turbulencias por Tramo',
+                title: 'Gráfico de Turbulencias por Tramo',
                 origin: 'Origen',
                 destination: 'Destino',
                 smooth: 'Suave',
                 light: 'Ligera',
                 moderate: 'Moderada',
-                severe: 'Severa'
+                severe: 'Severa',
+                distance: 'Distancia',
+                severity: 'Severidad'
               }}
             />
           )}

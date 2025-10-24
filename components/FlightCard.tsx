@@ -18,7 +18,13 @@ export default function FlightCard({ flight, isSelected, onSelect, labels }: Fli
   const arrivalDate = new Date(flight.arrivalTime);
   
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+    // Formatear en UTC
+    return date.toLocaleTimeString('en-GB', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      timeZone: 'UTC',
+      hour12: false 
+    });
   };
   
   const calculateDuration = () => {
@@ -88,6 +94,7 @@ export default function FlightCard({ flight, isSelected, onSelect, labels }: Fli
         <div className="flex-1">
           <p className="text-xs text-slate-500">{labels.departure}</p>
           <p className="text-xl font-bold text-slate-900">{formatTime(departureDate)}</p>
+          <p className="text-xs text-slate-400">UTC</p>
         </div>
         
         <div className="flex-1 flex items-center justify-center px-2">
@@ -104,6 +111,7 @@ export default function FlightCard({ flight, isSelected, onSelect, labels }: Fli
         <div className="flex-1 text-right">
           <p className="text-xs text-slate-500">{labels.arrival}</p>
           <p className="text-xl font-bold text-slate-900">{formatTime(arrivalDate)}</p>
+          <p className="text-xs text-slate-400">UTC</p>
         </div>
       </div>
       
