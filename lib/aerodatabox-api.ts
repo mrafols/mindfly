@@ -82,7 +82,7 @@ export async function searchFlightsAeroDataBox(
   destinationIATA: string
 ): Promise<Flight[]> {
   const apiKey = process.env.AERODATABOX_API_KEY;
-  
+
   if (!apiKey) {
     console.warn('⚠️ AERODATABOX_API_KEY no configurada - configúrala en .env.local');
     return [];
@@ -90,15 +90,15 @@ export async function searchFlightsAeroDataBox(
 
   try {
     console.log(`📡 Consultando AeroDataBox: ${originIATA} → ${destinationIATA}`);
-    
+
     // Obtener fecha actual y rango de búsqueda
     const now = new Date();
     const fromTime = new Date(now.getTime() - 2 * 60 * 60 * 1000); // 2 horas atrás
     const toTime = new Date(now.getTime() + 12 * 60 * 60 * 1000); // 12 horas adelante
-    
+
     const fromStr = fromTime.toISOString().slice(0, 16);
     const toStr = toTime.toISOString().slice(0, 16);
-    
+
     // Buscar vuelos desde el origen
     const response = await fetch(
       `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${originIATA}/${fromStr}/${toStr}?withLeg=true&direction=Departure&withCancelled=false&withCodeshared=true`,
@@ -116,6 +116,8 @@ export async function searchFlightsAeroDataBox(
     if (!response.ok) {
       if (response.status === 401) {
         console.error('❌ AeroDataBox: API key inválida o expirada');
+      } else if (response.status === 403) {
+        console.error('❌ AeroDataBox: Acceso denegado (403). Verifique su suscripción o permisos de la API Key.');
       } else if (response.status === 429) {
         console.error('❌ AeroDataBox: Límite de peticiones excedido');
       } else {
@@ -125,10 +127,10 @@ export async function searchFlightsAeroDataBox(
     }
 
     const data = await response.json();
-    
+
     const totalDepartures = data.departures?.length || 0;
     console.log(`📊 AeroDataBox: ${totalDepartures} salidas desde ${originIATA}`);
-    
+
     if (!data.departures || data.departures.length === 0) {
       console.log(`ℹ️ No hay vuelos programados desde ${originIATA} en este momento`);
       return [];
@@ -155,7 +157,7 @@ export async function searchFlightsAeroDataBox(
     } else {
       console.log(`ℹ️ No hay vuelos directos ${originIATA}→${destinationIATA} disponibles`);
     }
-    
+
     return flights;
   } catch (error) {
     console.error('❌ Error consultando AeroDataBox:', error);
@@ -168,7 +170,7 @@ export async function searchFlightsAeroDataBox(
  */
 export async function getAirportInfo(iataCode: string): Promise<AeroDataBoxAirport | null> {
   const apiKey = process.env.AERODATABOX_API_KEY;
-  
+
   if (!apiKey) {
     console.warn('AERODATABOX_API_KEY no configurada');
     return null;
@@ -208,7 +210,7 @@ export async function getAirportFlights(
   direction: 'Departure' | 'Arrival' = 'Departure'
 ): Promise<Flight[]> {
   const apiKey = process.env.AERODATABOX_API_KEY;
-  
+
   if (!apiKey) {
     console.warn('AERODATABOX_API_KEY no configurada');
     return [];
@@ -218,7 +220,7 @@ export async function getAirportFlights(
     const now = new Date();
     const fromTime = new Date(now.getTime() - 2 * 60 * 60 * 1000); // 2 horas atrás
     const toTime = new Date(now.getTime() + 12 * 60 * 60 * 1000); // 12 horas adelante
-    
+
     const fromStr = fromTime.toISOString().slice(0, 16);
     const toStr = toTime.toISOString().slice(0, 16);
 
@@ -241,7 +243,7 @@ export async function getAirportFlights(
 
     const data = await response.json();
     const flightsArray = direction === 'Departure' ? data.departures : data.arrivals;
-    
+
     if (!flightsArray || flightsArray.length === 0) {
       return [];
     }
@@ -265,7 +267,7 @@ export async function getFlightByNumber(
   date?: Date
 ): Promise<(Flight & { originIATA?: string; destinationIATA?: string }) | null> {
   const apiKey = process.env.AERODATABOX_API_KEY;
-  
+
   if (!apiKey) {
     console.warn('AERODATABOX_API_KEY no configurada');
     return null;
@@ -293,18 +295,18 @@ export async function getFlightByNumber(
     }
 
     const data = await response.json();
-    
+
     console.log(`🔍 AeroDataBox búsqueda de vuelo ${flightNumber}: ${data?.length || 0} resultados`);
-    
+
     if (!data || data.length === 0) {
       console.log(`⚠️ AeroDataBox: Vuelo ${flightNumber} no encontrado`);
       return null;
     }
 
     console.log(`📋 Primer resultado:`, JSON.stringify(data[0], null, 2).slice(0, 500));
-    
+
     const flightData = parseAeroDataBoxFlight(data[0]);
-    
+
     // Añadir códigos IATA de origen y destino
     if (flightData && data[0].departure?.airport?.iata && data[0].arrival?.airport?.iata) {
       return {
@@ -313,7 +315,7 @@ export async function getFlightByNumber(
         destinationIATA: data[0].arrival.airport.iata
       };
     }
-    
+
     return flightData;
   } catch (error) {
     console.error('Error obteniendo vuelo por número:', error);
@@ -355,13 +357,13 @@ function parseAeroDataBoxFlight(flight: AeroDataBoxFlight): Flight | null {
   }
 
   // Usar horarios reales si están disponibles, sino programados
-  const departureTime = flight.departure.actualTime?.utc || 
-                       flight.departure.scheduledTime?.utc || 
-                       new Date().toISOString();
-  
-  const arrivalTime = flight.arrival.actualTime?.utc || 
-                     flight.arrival.scheduledTime?.utc || 
-                     new Date().toISOString();
+  const departureTime = flight.departure.actualTime?.utc ||
+    flight.departure.scheduledTime?.utc ||
+    new Date().toISOString();
+
+  const arrivalTime = flight.arrival.actualTime?.utc ||
+    flight.arrival.scheduledTime?.utc ||
+    new Date().toISOString();
 
   return {
     flightNumber: flight.number,
@@ -383,21 +385,21 @@ export async function searchRouteFlightsAeroDataBox(
   try {
     // Primero intentar buscar desde el origen
     let flights = await searchFlightsAeroDataBox(originIATA, destinationIATA);
-    
+
     if (flights.length > 0) {
       return flights;
     }
 
     // Si no hay resultados, intentar buscar llegadas al destino desde el origen
     const apiKey = process.env.AERODATABOX_API_KEY;
-    
+
     if (!apiKey) {
       return [];
     }
 
     const today = new Date();
     const dateStr = today.toISOString().split('T')[0];
-    
+
     const response = await fetch(
       `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${destinationIATA}/${dateStr}T00:00/${dateStr}T23:59?withLeg=true&direction=Arrival&withCancelled=false&withCodeshared=false`,
       {
@@ -416,13 +418,13 @@ export async function searchRouteFlightsAeroDataBox(
     }
 
     const data = await response.json();
-    
+
     if (!data.arrivals || data.arrivals.length === 0) {
       return [];
     }
 
     flights = data.arrivals
-      .filter((flight: AeroDataBoxFlight) => 
+      .filter((flight: AeroDataBoxFlight) =>
         flight.departure?.airport?.iata?.toUpperCase() === originIATA.toUpperCase()
       )
       .map((flight: AeroDataBoxFlight) => parseAeroDataBoxFlight(flight))

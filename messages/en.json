@@ -27,6 +27,11 @@
         "title": "Visual Maps",
         "description": "Visualize your route with interactive maps and weather conditions"
       }
+    },
+    "errors": {
+      "fillFields": "Please enter your flight number (e.g: VY3900, IB1013)",
+      "loadingError": "Error loading weather data. Please try again.",
+      "invalidAirport": "Could not find the airport. Please verify the names."
     }
   },
   "forecast": {
@@ -109,11 +114,5 @@
       "safety": "Remember: Flying is one of the safest means of transportation. Aircraft are constantly inspected, pilots have thousands of hours of training, and there are multiple redundant safety systems."
     },
     "newSearch": "Search Another Route"
-  },
-  "errors": {
-    "fillFields": "Please enter your flight number (e.g: VY3900, IB1013)",
-    "loadingError": "Error loading weather data. Please try again.",
-    "invalidAirport": "Could not find the airport. Please verify the names."
   }
 }
-
