@@ -28,21 +28,21 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
 
   // NIVEL 1: Buscar en AeroDataBox API (datos reales)
   console.log(`🔍 Buscando vuelo ${flightNumber} en AeroDataBox API...`);
-    const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
-    
-    try {
-      const flightData = await getFlightByNumber(flightNumber);
-      
-      if (flightData) {
+  const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
+
+  try {
+    const flightData = await getFlightByNumber(flightNumber);
+
+    if (flightData) {
       console.log('✅ Vuelo encontrado en AeroDataBox API');
-        flights = [flightData];
-      
+      flights = [flightData];
+
       // Extraer origen y destino si la API los proporciona
-      if ('originIATA' in flightData && 'destinationIATA' in flightData && 
-          flightData.originIATA && flightData.destinationIATA) {
+      if ('originIATA' in flightData && 'destinationIATA' in flightData &&
+        flightData.originIATA && flightData.destinationIATA) {
         originAirport = findAirport(flightData.originIATA);
         destAirport = findAirport(flightData.destinationIATA);
-        
+
         if (originAirport && destAirport) {
           console.log(`✅ Ruta identificada: ${flightData.originIATA} → ${flightData.destinationIATA}`);
           flightFound = true;
@@ -56,7 +56,7 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
   // NIVEL 2: Buscar en base de datos local de rutas comunes
   if (!flightFound) {
     console.log(`🔍 Buscando vuelo ${flightNumber} en base de datos local...`);
-    
+
     // Lista completa de rutas para buscar
     const allRoutes = [
       // Barcelona - Menorca (ruta muy común de Vueling)
@@ -105,7 +105,7 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
       const matchingFlight = routeFlights.find(
         f => f.flightNumber.toUpperCase() === flightNumber.toUpperCase()
       );
-      
+
       if (matchingFlight) {
         console.log(`✅ Vuelo encontrado en base de datos: ${route.origin} → ${route.destination}`);
         flights = [matchingFlight];
@@ -119,6 +119,12 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
 
   // NIVEL 3: Crear vuelo simulado como último recurso
   if (!flightFound || !originAirport || !destAirport) {
+    console.log(`⚠️ Vuelo ${flightNumber} no encontrado en APIs ni base de datos.`);
+    // El usuario solicitó explícitamente usar siempre la API y no inventar datos.
+    // Por lo tanto, si no se encuentra, mostramos 404.
+    notFound();
+
+    /* LOGICA ANTERIOR COMENTADA
     console.log(`⚠️ Vuelo ${flightNumber} no encontrado, creando simulado...`);
     
     // Usar ruta Barcelona-Madrid como predeterminada
@@ -150,6 +156,7 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
     }];
     
     console.log(`ℹ️ Vuelo simulado creado: BCN → MAD`);
+    */
   }
 
   // Validar que tenemos lo mínimo necesario
@@ -179,7 +186,7 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
   // Análisis de condiciones
   const avgWindSpeed = (weather.origin.windSpeed + weather.destination.windSpeed + (weather.midpoint?.windSpeed || 0)) / 3;
   const avgVisibility = (weather.origin.visibility + weather.destination.visibility + (weather.midpoint?.visibility || 10)) / 3;
-  
+
   const hasStrongWind = avgWindSpeed > 30;
   const hasReducedVisibility = avgVisibility < 5;
   const hasTurbulence = avgWindSpeed > 20;
@@ -208,17 +215,17 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
           </div>
         </div>
 
-      {/* Map */}
-      <div className="mb-12">
-        <RouteMap
-          originLat={originAirport.lat}
-          originLon={originAirport.lon}
-          originName={originAirport.city}
-          destLat={destAirport.lat}
-          destLon={destAirport.lon}
-          destName={destAirport.city}
-        />
-      </div>
+        {/* Map */}
+        <div className="mb-12">
+          <RouteMap
+            originLat={originAirport.lat}
+            originLon={originAirport.lon}
+            originName={originAirport.city}
+            destLat={destAirport.lat}
+            destLon={destAirport.lon}
+            destName={destAirport.city}
+          />
+        </div>
 
         {/* Vuelos Disponibles */}
         <div className="mb-16">
@@ -282,23 +289,10 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
           <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
             {t('weatherConditions')}
           </h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          <WeatherCard
-            title={t('originWeather')}
-            weather={weather.origin}
-            labels={{
-              temperature: t('temperature'),
-              humidity: t('humidity'),
-              windSpeed: t('windSpeed'),
-              conditions: t('conditions'),
-              pressure: t('pressure'),
-              visibility: t('visibility'),
-            }}
-          />
-          {weather.midpoint && (
+          <div className="grid md:grid-cols-3 gap-6">
             <WeatherCard
-              title={t('routeWeather')}
-              weather={weather.midpoint}
+              title={t('originWeather')}
+              weather={weather.origin}
               labels={{
                 temperature: t('temperature'),
                 humidity: t('humidity'),
@@ -308,28 +302,41 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
                 visibility: t('visibility'),
               }}
             />
-          )}
-          <WeatherCard
-            title={t('destinationWeather')}
-            weather={weather.destination}
-            labels={{
-              temperature: t('temperature'),
-              humidity: t('humidity'),
-              windSpeed: t('windSpeed'),
-              conditions: t('conditions'),
-              pressure: t('pressure'),
-              visibility: t('visibility'),
-            }}
-          />
+            {weather.midpoint && (
+              <WeatherCard
+                title={t('routeWeather')}
+                weather={weather.midpoint}
+                labels={{
+                  temperature: t('temperature'),
+                  humidity: t('humidity'),
+                  windSpeed: t('windSpeed'),
+                  conditions: t('conditions'),
+                  pressure: t('pressure'),
+                  visibility: t('visibility'),
+                }}
+              />
+            )}
+            <WeatherCard
+              title={t('destinationWeather')}
+              weather={weather.destination}
+              labels={{
+                temperature: t('temperature'),
+                humidity: t('humidity'),
+                windSpeed: t('windSpeed'),
+                conditions: t('conditions'),
+                pressure: t('pressure'),
+                visibility: t('visibility'),
+              }}
+            />
+          </div>
         </div>
-      </div>
 
         {/* Detailed Explanation */}
         <div className="bg-white/70 backdrop-blur-xl rounded-3xl border border-white/40 p-10 mb-12 shadow-2xl">
           <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">
             {t('explanation.title')}
           </h2>
-          
+
           <div className="space-y-6 text-slate-700">
             <p className="text-slate-600 text-center text-lg">
               {t('explanation.intro')}

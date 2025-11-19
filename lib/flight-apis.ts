@@ -58,10 +58,10 @@ export async function searchFlightsOpenSky(
   try {
     // OpenSky Network no filtra por ruta directamente, pero podemos buscar vuelos activos
     // y filtrar por origen/destino usando otra fuente
-    
+
     // Por ahora, usaremos un enfoque combinado
     console.log(`Buscando vuelos de ${originIATA} a ${destinationIATA}`);
-    
+
     return [];
   } catch (error) {
     console.error('Error con OpenSky Network:', error);
@@ -78,7 +78,7 @@ export async function searchFlightsAviationStack(
   destinationIATA: string
 ): Promise<Flight[]> {
   const apiKey = process.env.AVIATIONSTACK_API_KEY;
-  
+
   if (!apiKey) {
     console.warn('AVIATIONSTACK_API_KEY no configurada');
     return [];
@@ -99,7 +99,7 @@ export async function searchFlightsAviationStack(
     }
 
     const data = await response.json();
-    
+
     if (!data.data || data.data.length === 0) {
       return [];
     }
@@ -170,7 +170,7 @@ export async function searchFlightsPublicData(
 function getCommonRoutes(origin: string, destination: string): Flight[] {
   const routeKey = `${origin}-${destination}`;
   const today = new Date();
-  
+
   // Base de datos de rutas reales comunes
   const realRoutes: Record<string, Array<{
     airline: string;
@@ -270,7 +270,7 @@ function getCommonRoutes(origin: string, destination: string): Flight[] {
   };
 
   const routes = realRoutes[routeKey] || [];
-  
+
   if (routes.length === 0) {
     return [];
   }
@@ -279,21 +279,21 @@ function getCommonRoutes(origin: string, destination: string): Flight[] {
   return routes.map(route => {
     const departure = new Date(today);
     departure.setHours(route.departureHour, route.departureMinute, 0, 0);
-    
+
     const arrival = new Date(departure);
     arrival.setHours(arrival.getHours() + route.durationHours);
     arrival.setMinutes(arrival.getMinutes() + route.durationMinutes);
-    
+
     // Determinar estado basado en la hora actual
     const now = new Date();
     let status: Flight['status'] = 'scheduled';
-    
+
     if (now > arrival) {
       status = 'landed';
     } else if (now > departure && now < arrival) {
       status = 'active';
     }
-    
+
     return {
       flightNumber: route.flightNumber,
       airline: route.airline,
@@ -312,18 +312,12 @@ export async function searchRealFlights(
   originIATA: string,
   destinationIATA: string
 ): Promise<Flight[]> {
-  // 1. Intentar con base de datos de rutas comunes (más rápido y confiable)
-  const publicFlights = await searchFlightsPublicData(originIATA, destinationIATA);
-  if (publicFlights.length > 0) {
-    return publicFlights;
-  }
-
-  // 2. Intentar con AeroDataBox (datos completos de aeropuertos y vuelos)
+  // 1. Intentar con AeroDataBox (datos completos de aeropuertos y vuelos)
   try {
     const { searchRouteFlightsAeroDataBox } = await import('./aerodatabox-api');
-    
+
     const aeroDataBoxFlights = await searchRouteFlightsAeroDataBox(originIATA, destinationIATA);
-    
+
     if (aeroDataBoxFlights.length > 0) {
       return aeroDataBoxFlights;
     }
@@ -331,15 +325,21 @@ export async function searchRealFlights(
     console.error('Error con AeroDataBox:', error);
   }
 
-  // 3. Intentar con AviationStack si está configurado
+  // 2. Intentar con AviationStack si está configurado
   const aviationStackFlights = await searchFlightsAviationStack(originIATA, destinationIATA);
   if (aviationStackFlights.length > 0) {
     return aviationStackFlights;
   }
 
+  // 3. Intentar con base de datos de rutas comunes (fallback local)
+  const publicFlights = await searchFlightsPublicData(originIATA, destinationIATA);
+  if (publicFlights.length > 0) {
+    return publicFlights;
+  }
+
   // 4. Si no hay resultados, intentar rutas inversas o alternativas
   const reverseRoute = await searchFlightsPublicData(destinationIATA, originIATA);
-  
+
   return reverseRoute.length > 0 ? [] : []; // No mostrar ruta inversa, mejor no mostrar nada
 }
 
