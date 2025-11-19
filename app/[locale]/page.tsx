@@ -29,7 +29,12 @@ export default async function HomePage() {
               flightNumber: t('flightNumber'),
               flightNumberPlaceholder: t('flightNumberPlaceholder'),
               flightNumberHelper: t('flightNumberHelper'),
+              origin: t('origin'),
+              originPlaceholder: t('originPlaceholder'),
+              destination: t('destination'),
+              destinationPlaceholder: t('destinationPlaceholder'),
               searchButton: t('searchButton'),
+              orText: t('orText'),
             }}
             errorMessage={t.raw('errors.fillFields')}
           />

@@ -241,7 +241,15 @@ function getCommonRoutes(origin: string, destination: string): Flight[] {
       { airline: 'Air Europa', flightNumber: 'UX6004', aircraft: 'ATR72', departureHour: 8, departureMinute: 0, durationHours: 0, durationMinutes: 35, frequency: 'daily' },
     ],
     'MAH-BCN': [
-      { airline: 'Vueling', flightNumber: 'VY3951', aircraft: 'A320', departureHour: 9, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3950', aircraft: 'A320', departureHour: 9, departureMinute: 30, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3952', aircraft: 'A320', departureHour: 12, departureMinute: 15, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+      { airline: 'Vueling', flightNumber: 'VY3954', aircraft: 'A320', departureHour: 15, departureMinute: 45, durationHours: 0, durationMinutes: 55, frequency: 'daily' },
+    ],
+    'SVQ-PMI': [
+      { airline: 'Vueling', flightNumber: 'VY3951', aircraft: 'A320', departureHour: 10, departureMinute: 15, durationHours: 1, durationMinutes: 25, frequency: 'daily' },
+    ],
+    'PMI-SVQ': [
+      { airline: 'Vueling', flightNumber: 'VY3953', aircraft: 'A320', departureHour: 12, departureMinute: 30, durationHours: 1, durationMinutes: 25, frequency: 'daily' },
     ],
     // Barcelona - Menorca (BCN-MAH) - Rutas muy frecuentes
     'BCN-MAH': [
@@ -307,24 +315,39 @@ function getCommonRoutes(origin: string, destination: string): Flight[] {
 
 /**
  * Función principal que intenta múltiples fuentes
+ * PRIORIDAD: APIs reales primero, base de datos local como fallback
  */
 export async function searchRealFlights(
   originIATA: string,
   destinationIATA: string
 ): Promise<Flight[]> {
+<<<<<<< HEAD
   // 1. Intentar con AeroDataBox (datos completos de aeropuertos y vuelos)
   try {
     const { searchRouteFlightsAeroDataBox } = await import('./aerodatabox-api');
 
+=======
+  console.log(`🔍 Buscando vuelos REALES: ${originIATA} → ${destinationIATA}`);
+
+  // 1. PRIORIDAD MÁXIMA: AeroDataBox (datos completos y actualizados)
+  try {
+    const { searchRouteFlightsAeroDataBox } = await import('./aerodatabox-api');
+    console.log('📡 Consultando AeroDataBox API...');
+    
+>>>>>>> e859df1a0f909535ad109293ea41828322a2fd79
     const aeroDataBoxFlights = await searchRouteFlightsAeroDataBox(originIATA, destinationIATA);
 
     if (aeroDataBoxFlights.length > 0) {
+      console.log(`✅ AeroDataBox: ${aeroDataBoxFlights.length} vuelos encontrados (DATOS REALES)`);
       return aeroDataBoxFlights;
+    } else {
+      console.log('ℹ️ AeroDataBox: No hay vuelos para esta ruta hoy');
     }
   } catch (error) {
-    console.error('Error con AeroDataBox:', error);
+    console.error('❌ Error con AeroDataBox:', error);
   }
 
+<<<<<<< HEAD
   // 2. Intentar con AviationStack si está configurado
   const aviationStackFlights = await searchFlightsAviationStack(originIATA, destinationIATA);
   if (aviationStackFlights.length > 0) {
@@ -341,5 +364,33 @@ export async function searchRealFlights(
   const reverseRoute = await searchFlightsPublicData(destinationIATA, originIATA);
 
   return reverseRoute.length > 0 ? [] : []; // No mostrar ruta inversa, mejor no mostrar nada
+=======
+  // 2. SEGUNDA OPCIÓN: AviationStack (si está configurado)
+  try {
+    console.log('📡 Consultando AviationStack API...');
+    const aviationStackFlights = await searchFlightsAviationStack(originIATA, destinationIATA);
+    
+    if (aviationStackFlights.length > 0) {
+      console.log(`✅ AviationStack: ${aviationStackFlights.length} vuelos encontrados (DATOS REALES)`);
+      return aviationStackFlights;
+    } else {
+      console.log('ℹ️ AviationStack: No hay vuelos o API no configurada');
+    }
+  } catch (error) {
+    console.error('❌ Error con AviationStack:', error);
+  }
+
+  // 3. ÚLTIMO RECURSO: Base de datos local (solo si APIs no funcionan)
+  console.log('⚠️ APIs no disponibles, usando base de datos local como fallback...');
+  const publicFlights = await searchFlightsPublicData(originIATA, destinationIATA);
+  
+  if (publicFlights.length > 0) {
+    console.log(`📚 Base de datos local: ${publicFlights.length} vuelos (DATOS DE REFERENCIA - pueden estar desactualizados)`);
+    return publicFlights;
+  }
+
+  console.log('❌ No se encontraron vuelos para esta ruta');
+  return [];
+>>>>>>> e859df1a0f909535ad109293ea41828322a2fd79
 }
 

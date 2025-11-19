@@ -45,6 +45,16 @@ export default function TurbulenceRouteMap({
     }
   };
 
+  const getSeverityBorderColor = (severity: string) => {
+    switch (severity) {
+      case 'none': return 'border-green-500';
+      case 'light': return 'border-yellow-400';
+      case 'moderate': return 'border-orange-500';
+      case 'severe': return 'border-red-500';
+      default: return 'border-gray-400';
+    }
+  };
+
   const getSeverityTextColor = (severity: string) => {
     switch (severity) {
       case 'none': return 'text-green-700';
@@ -132,7 +142,7 @@ export default function TurbulenceRouteMap({
         {segmentsWithPercentage.map((segment, index) => (
           <div
             key={index}
-            className={`${getSeverityBgColor(segment.severity)} rounded-xl p-4 border-l-4 ${getSeverityColor(segment.severity.replace('bg-', 'border-'))}`}
+            className={`${getSeverityBgColor(segment.severity)} rounded-xl p-4 border-l-4 ${getSeverityBorderColor(segment.severity)}`}
           >
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-slate-900">

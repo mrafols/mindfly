@@ -130,3 +130,15 @@ export const mainAirports: Airport[] = [
   findAirportByCode('SIN')!,
   findAirportByCode('HKG')!,
 ].filter((airport): airport is Airport => airport !== undefined);
+
+/**
+ * Obtiene todos los aeropuertos principales disponibles para selección
+ * Retorna los aeropuertos más comunes en formato simplificado
+ */
+export function getAllAirports(): Array<{ iata: string; name: string; city: string }> {
+  return mainAirports.map(airport => ({
+    iata: airport.code,
+    name: airport.name,
+    city: airport.city
+  }));
+}
