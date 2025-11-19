@@ -321,20 +321,13 @@ export async function searchRealFlights(
   originIATA: string,
   destinationIATA: string
 ): Promise<Flight[]> {
-<<<<<<< HEAD
-  // 1. Intentar con AeroDataBox (datos completos de aeropuertos y vuelos)
-  try {
-    const { searchRouteFlightsAeroDataBox } = await import('./aerodatabox-api');
-
-=======
   console.log(`🔍 Buscando vuelos REALES: ${originIATA} → ${destinationIATA}`);
 
   // 1. PRIORIDAD MÁXIMA: AeroDataBox (datos completos y actualizados)
   try {
     const { searchRouteFlightsAeroDataBox } = await import('./aerodatabox-api');
     console.log('📡 Consultando AeroDataBox API...');
-    
->>>>>>> e859df1a0f909535ad109293ea41828322a2fd79
+
     const aeroDataBoxFlights = await searchRouteFlightsAeroDataBox(originIATA, destinationIATA);
 
     if (aeroDataBoxFlights.length > 0) {
@@ -347,29 +340,11 @@ export async function searchRealFlights(
     console.error('❌ Error con AeroDataBox:', error);
   }
 
-<<<<<<< HEAD
-  // 2. Intentar con AviationStack si está configurado
-  const aviationStackFlights = await searchFlightsAviationStack(originIATA, destinationIATA);
-  if (aviationStackFlights.length > 0) {
-    return aviationStackFlights;
-  }
-
-  // 3. Intentar con base de datos de rutas comunes (fallback local)
-  const publicFlights = await searchFlightsPublicData(originIATA, destinationIATA);
-  if (publicFlights.length > 0) {
-    return publicFlights;
-  }
-
-  // 4. Si no hay resultados, intentar rutas inversas o alternativas
-  const reverseRoute = await searchFlightsPublicData(destinationIATA, originIATA);
-
-  return reverseRoute.length > 0 ? [] : []; // No mostrar ruta inversa, mejor no mostrar nada
-=======
   // 2. SEGUNDA OPCIÓN: AviationStack (si está configurado)
   try {
     console.log('📡 Consultando AviationStack API...');
     const aviationStackFlights = await searchFlightsAviationStack(originIATA, destinationIATA);
-    
+
     if (aviationStackFlights.length > 0) {
       console.log(`✅ AviationStack: ${aviationStackFlights.length} vuelos encontrados (DATOS REALES)`);
       return aviationStackFlights;
@@ -383,7 +358,7 @@ export async function searchRealFlights(
   // 3. ÚLTIMO RECURSO: Base de datos local (solo si APIs no funcionan)
   console.log('⚠️ APIs no disponibles, usando base de datos local como fallback...');
   const publicFlights = await searchFlightsPublicData(originIATA, destinationIATA);
-  
+
   if (publicFlights.length > 0) {
     console.log(`📚 Base de datos local: ${publicFlights.length} vuelos (DATOS DE REFERENCIA - pueden estar desactualizados)`);
     return publicFlights;
@@ -391,6 +366,5 @@ export async function searchRealFlights(
 
   console.log('❌ No se encontraron vuelos para esta ruta');
   return [];
->>>>>>> e859df1a0f909535ad109293ea41828322a2fd79
 }
 

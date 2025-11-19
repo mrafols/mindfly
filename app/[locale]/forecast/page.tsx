@@ -27,32 +27,10 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
   let flights: Awaited<ReturnType<typeof searchFlights>> = [];
   let flightFound = false;
 
-<<<<<<< HEAD
-  // NIVEL 1: Buscar en AeroDataBox API (datos reales)
-  console.log(`🔍 Buscando vuelo ${flightNumber} en AeroDataBox API...`);
-  const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
-
-  try {
-    const flightData = await getFlightByNumber(flightNumber);
-
-    if (flightData) {
-      console.log('✅ Vuelo encontrado en AeroDataBox API');
-      flights = [flightData];
-
-      // Extraer origen y destino si la API los proporciona
-      if ('originIATA' in flightData && 'destinationIATA' in flightData &&
-        flightData.originIATA && flightData.destinationIATA) {
-        originAirport = findAirport(flightData.originIATA);
-        destAirport = findAirport(flightData.destinationIATA);
-
-        if (originAirport && destAirport) {
-          console.log(`✅ Ruta identificada: ${flightData.originIATA} → ${flightData.destinationIATA}`);
-          flightFound = true;
-=======
   // CASO 1: Búsqueda directa por ruta (origin + destination)
   if (originIATA && destIATA) {
     console.log(`🔍 Búsqueda por ruta: ${originIATA} → ${destIATA}`);
-    
+
     originAirport = findAirport(originIATA);
     destAirport = findAirport(destIATA);
 
@@ -70,25 +48,24 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
     // NIVEL 1: Buscar en AeroDataBox API (datos reales)
     console.log(`🔍 Buscando vuelo ${flightNumber} en AeroDataBox API...`);
     const { getFlightByNumber } = await import('@/lib/aerodatabox-api');
-    
+
     try {
       const flightData = await getFlightByNumber(flightNumber);
-      
+
       if (flightData) {
         console.log('✅ Vuelo encontrado en AeroDataBox API');
         flights = [flightData];
-      
+
         // Extraer origen y destino si la API los proporciona
-        if ('originIATA' in flightData && 'destinationIATA' in flightData && 
-            flightData.originIATA && flightData.destinationIATA) {
+        if ('originIATA' in flightData && 'destinationIATA' in flightData &&
+          flightData.originIATA && flightData.destinationIATA) {
           originAirport = findAirport(flightData.originIATA);
           destAirport = findAirport(flightData.destinationIATA);
-          
+
           if (originAirport && destAirport) {
             console.log(`✅ Ruta identificada: ${flightData.originIATA} → ${flightData.destinationIATA}`);
             flightFound = true;
           }
->>>>>>> e859df1a0f909535ad109293ea41828322a2fd79
         }
       }
     } catch (error) {
@@ -160,51 +137,13 @@ export default async function ForecastPage({ params, searchParams }: ForecastPag
     }
   }
 
-<<<<<<< HEAD
-  // NIVEL 3: Crear vuelo simulado como último recurso
-  if (!flightFound || !originAirport || !destAirport) {
+  // NIVEL 3: Crear vuelo simulado como último recurso (solo para búsqueda por número de vuelo)
+  // MODIFICADO: Si no se encuentra, mostramos 404 como solicitó el usuario.
+  if (!flightFound && (!originAirport || !destAirport)) {
     console.log(`⚠️ Vuelo ${flightNumber} no encontrado en APIs ni base de datos.`);
     // El usuario solicitó explícitamente usar siempre la API y no inventar datos.
     // Por lo tanto, si no se encuentra, mostramos 404.
     notFound();
-
-    /* LOGICA ANTERIOR COMENTADA
-=======
-  // NIVEL 3: Crear vuelo simulado como último recurso (solo para búsqueda por número de vuelo)
-  if (!flightFound && flightNumber && (!originAirport || !destAirport)) {
->>>>>>> e859df1a0f909535ad109293ea41828322a2fd79
-    console.log(`⚠️ Vuelo ${flightNumber} no encontrado, creando simulado...`);
-    
-    // Usar ruta Barcelona-Madrid como predeterminada
-    originAirport = findAirport('BCN');
-    destAirport = findAirport('MAD');
-
-    if (!originAirport || !destAirport) {
-      notFound();
-    }
-
-    const now = new Date();
-    const departureTime = new Date(now.getTime() + 2 * 60 * 60 * 1000);
-    const { estimateFlightTime } = await import('@/lib/airports');
-    const distance = Math.round(
-      calculateDistance(originAirport.lat, originAirport.lon, destAirport.lat, destAirport.lon)
-    );
-    const flightTime = estimateFlightTime(distance);
-    const arrivalTime = new Date(
-      departureTime.getTime() + (flightTime.hours * 60 + flightTime.minutes) * 60 * 1000
-    );
-    
-    flights = [{
-      flightNumber: flightNumber.toUpperCase(),
-      airline: flightNumber.replace(/[0-9]/g, ''),
-      departureTime: departureTime.toISOString(),
-      arrivalTime: arrivalTime.toISOString(),
-      aircraft: 'A320',
-      status: 'scheduled' as const
-    }];
-    
-    console.log(`ℹ️ Vuelo simulado creado: BCN → MAD`);
-    */
   }
 
   // Validar que tenemos lo mínimo necesario
